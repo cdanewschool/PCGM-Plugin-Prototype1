@@ -1,0 +1,251 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.1.6-hudson-317-. --><xsd:schema xmlns:hl7="urn:hl7-org:v3" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:mif="urn:hl7-org:v3/mif" targetNamespace="urn:hl7-org:v3" elementFormDefault="qualified">
+	<!-- =========================================================================
+        This schema is a helper schema.  It is required because XML Schemas
+        do not allow you to import multiple schemas that use the same namespace.
+        The only way to do it is to use include to get them all into one file and
+        then import only the one file.  Since HL7 has broken apart their messages
+        into separate files but uses the same namespace, we need to compbine them
+        together so that we can access them.
+        
+        NOTE:  All schemas that contain references to multiple HL7 files must
+               be defined in this schema.
+        ========================================================================= -->
+	
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_114.xsd" />
+        <xsd:include schemaLocation="AdapterCommonDataLayer.xsd_118.xsd" />
+        <!--<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_137.xsd" />-->
+        <xsd:include schemaLocation="AdapterCommonDataLayer.xsd_136.xsd" />
+        <!--
+       
+	
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_113.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_149.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_151.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_118.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_122.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_116.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_117.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_125.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_126.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_129.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_130.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_131.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_106.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_107.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_110.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_111.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_143.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_144.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_115.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_134.xsd" />
+	<xsd:include schemaLocation="AdapterCommonDataLayer.xsd_135.xsd" />
+        -->
+	<!-- ====================================================================
+     Common Data Layer Schemas.
+    ==================================================================== -->
+	<!--
+       
+	<xsd:complexType name="CareRecord_QUPC_IN040100UV01RequestType">
+		<xsd:sequence>
+			<xsd:element name="query" type="hl7:QUPC_IN040100UV01.MCCI_MT000100UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CareRecord_QUPC_IN040200UV01MessageType">
+		<xsd:sequence>
+			<xsd:element name="response" type="hl7:QUPC_IN040200UV01.MCCI_MT000300UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType> -->
+        
+          <xsd:complexType name="CareRecord_QUPC_IN043100UV01RequestType">
+		<xsd:sequence>
+			<xsd:element name="localDeviceId" type="xsd:string" />
+			<xsd:element name="senderOID" type="xsd:string" />
+			<xsd:element name="receiverOID" type="xsd:string" />
+			<xsd:element name="query" type="hl7:QUPC_IN043100UV01.MCCI_MT000100UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+      <!-- <xsd:complexType name="CareRecord_QUPC_IN043200UV01ResponseType">
+		<xsd:sequence>
+			<xsd:element name="careRecord" type="hl7:QUPC_IN043200UV01.MFMI_MT700712UV01.Subject1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="CareRecord_QUPC_IN043200UV01MessageType">
+		<xsd:sequence>
+			<xsd:element name="response" type="hl7:QUPC_IN043200UV01.MCCI_MT000300UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>-->
+	<xsd:complexType name="PatientDemographics_PRPA_IN201307UV02RequestType">
+		<xsd:sequence>
+			<xsd:element name="localDeviceId" type="xsd:string" />
+			<xsd:element name="senderOID" type="xsd:string" />
+			<xsd:element name="receiverOID" type="xsd:string" />
+			<xsd:element name="query" type="hl7:PRPA_IN201307UV02.MCCI_MT000100UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+      
+	<xsd:complexType name="PatientDemographics_PRPA_MT201303UVResponseType">
+		<xsd:sequence>
+			 <xsd:element name="subject" type="hl7:PRPA_MT201303UV02.Patient" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="PatientDemographics_PRPA_IN201308UVMessageType">
+		<xsd:sequence>
+			<xsd:element ref="hl7:PRPA_IN201308UV02" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--
+        <xsd:complexType name="ProviderDetails_PRPM_IN306010UV1RequestType">
+		<xsd:sequence>
+			<xsd:element name="localDeviceId" type="xsd:string" />
+			<xsd:element name="senderOID" type="xsd:string" />
+			<xsd:element name="receiverOID" type="xsd:string" />
+			<xsd:element name="query" type="hl7:PRPM_IN306010UV01.MCCI_MT000100UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="FindEncounters_PRPA_IN900300UV02RequestType">
+		<xsd:sequence>
+			<xsd:element name="query" type="hl7:PRPA_IN900300UV02.MCCI_MT000100UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="FindEncounters_PRPA_IN900350UV02ResponseType">
+		<xsd:sequence>
+			<xsd:element name="event" type="hl7:PRPA_IN900350UV02.MCCI_MT000300UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="FindEncounters_PRPA_IN900350UV02MessageType">
+		<xsd:sequence>
+			<xsd:element name="message" type="hl7:PRPA_IN900350UV02.MCCI_MT000300UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="FindPatients_PRPA_IN201305UVRequestType">
+		<xsd:sequence>
+			<xsd:element name="localDeviceId" type="xsd:string" />
+			<xsd:element name="senderOID" type="xsd:string" />
+			<xsd:element name="receiverOID" type="xsd:string" />
+			<xsd:element name="query" type="hl7:PRPA_IN201305UV.MCCI_MT000100UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="FindPatients_PRPA_MT201310UVResponseType">
+		<xsd:sequence>
+			<xsd:element name="subject" type="hl7:PRPA_MT201310UV.Patient" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ProviderDetails_PRPM_IN306011UV01ResponseType">
+		<xsd:sequence>
+			<xsd:element name="response" type="hl7:PRPM_IN306011UV01.MCCI_MT000300UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="SlotRequest_PRSC_IN030101UVMessageType">
+		<xsd:sequence>
+			<xsd:element name="request" type="hl7:PRSC_IN030101UV.MCCI_MT000100UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="SlotConfirmation_PRSC_IN030102UVMessageType">
+		<xsd:sequence>
+			<xsd:element name="message" type="hl7:PRSC_IN030102UV.MCCI_MT000300UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="SlotRejection_PRSC_IN030103UVMessageType">
+		<xsd:sequence>
+			<xsd:element name="message" type="hl7:PRSC_IN030103UV.MCCI_MT000300UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="SlotResponse_MessageType">
+		<xsd:sequence>
+			<xsd:choice>
+				<xsd:element ref="hl7:SlotConfirmation_PRSC_IN030102UVMessage" minOccurs="0" />
+				<xsd:element ref="hl7:SlotRejection_PRSC_IN030103UVMessage" minOccurs="0" />
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ResultQuery_POLB_IN354000UV01MessageType">
+		<xsd:sequence>
+			<xsd:element name="query" type="hl7:POLB_IN354000UV01.MCCI_MT000100UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ResultEvent_POLB_IN364000UV01MessageType">
+		<xsd:sequence>
+			<xsd:element name="message" type="hl7:POLB_IN364000UV01.MCCI_MT000300UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CompositeOrder_POOR_IN200901UVRequestType">
+		<xsd:sequence>
+			<xsd:element name="request" type="hl7:POOR_IN200901UV.MCCI_MT000100UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="ActReference_POOR_IN200911UVMessageType">
+		<xsd:sequence>
+			<xsd:element name="message" type="hl7:POOR_IN200911UV.MCCI_MT000100UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="RecordDetail_REPC_IN040100UVRequestType">
+		<xsd:sequence>
+			<xsd:element name="query" type="hl7:REPC_IN040100UV.MCCI_MT000100UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CareComposition_REPC_IN040200UVMessageType">
+		<xsd:sequence>
+			<xsd:element name="message" type="hl7:REPC_IN040200UV.MCCI_MT000300UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="SlotsQueryResponse_PRSC_IN030102UVMessageType">
+		<xsd:sequence>
+			<xsd:element name="message" type="hl7:PRSC_IN030102UV.MCCI_MT000300UV01.Message" />
+		</xsd:sequence>
+	</xsd:complexType>
+ -->
+        <!-- requests -->
+        <xsd:element name="PatientDemographics_PRPA_IN201307UV02Request" type="hl7:PatientDemographics_PRPA_IN201307UV02RequestType" />
+        <xsd:element name="CareRecord_QUPC_IN043100UV01AllergiesRequest" type="hl7:CareRecord_QUPC_IN043100UV01RequestType" />
+        <xsd:element name="CareRecord_QUPC_IN043100UV01ProblemsRequest" type="hl7:CareRecord_QUPC_IN043100UV01RequestType" />
+	
+         <!-- 
+	<xsd:element name="CareRecord_QUPC_IN043100UV01MedicationsRequest" type="hl7:CareRecord_QUPC_IN043100UV01RequestType" />
+	
+	<xsd:element name="CareRecord_QUPC_IN043100UV01ProceduresRequest" type="hl7:CareRecord_QUPC_IN043100UV01RequestType" />
+	<xsd:element name="CareRecord_QUPC_IN043100UV01TestResultsRequest" type="hl7:CareRecord_QUPC_IN043100UV01RequestType" />
+	<xsd:element name="CareRecord_QUPC_IN043100UV01VitalsRequest" type="hl7:CareRecord_QUPC_IN043100UV01RequestType" />
+	<xsd:element name="CareRecord_QUPC_IN043100UV01ImmunizationsRequest" type="hl7:CareRecord_QUPC_IN043100UV01RequestType" />
+	<xsd:element name="CareRecord_QUPC_IN043100UV01SocialHistoryRequest" type="hl7:CareRecord_QUPC_IN043100UV01RequestType" />
+	<xsd:element name="CareRecord_QUPC_IN043100UV01FamilyHistoryRequest" type="hl7:CareRecord_QUPC_IN043100UV01RequestType" />
+	<xsd:element name="CareRecord_QUPC_IN043100UV01OrdersRequest" type="hl7:CareRecord_QUPC_IN043100UV01RequestType" />
+	<xsd:element name="CareRecord_QUPC_IN043100UV01Request" type="hl7:CareRecord_QUPC_IN043100UV01RequestType" />
+	<xsd:element name="FindEncounters_PRPA_IN900300UV02Request" type="hl7:FindEncounters_PRPA_IN900300UV02RequestType" />
+	
+	<xsd:element name="ProviderDetails_PRPM_IN306010UV1Request" type="hl7:ProviderDetails_PRPM_IN306010UV1RequestType" />
+	<xsd:element name="SlotRequest_PRSC_IN030101UVMessage" type="hl7:SlotRequest_PRSC_IN030101UVMessageType" />
+	<xsd:element name="FindPatients_PRPA_IN201305UVRequest" type="hl7:FindPatients_PRPA_IN201305UVRequestType" />
+	<xsd:element name="ResultQuery_POLB_IN354000UV01Message" type="hl7:ResultQuery_POLB_IN354000UV01MessageType" />
+	<xsd:element name="CompositeOrder_POOR_IN200901UVLabRequest" type="hl7:CompositeOrder_POOR_IN200901UVRequestType" />
+	<xsd:element name="RecordDetail_REPC_IN040100UVRequest" type="hl7:RecordDetail_REPC_IN040100UVRequestType"/>
+	<xsd:element name="IMPCareRecord_QUPC_IN040100UV01Request" type="hl7:CareRecord_QUPC_IN040100UV01RequestType" />
+	<xsd:element name="AMBCareRecord_QUPC_IN040100UV01Request" type="hl7:CareRecord_QUPC_IN040100UV01RequestType" />
+	<xsd:element name="CareRecord_QUPC_IN043100UV01ImagingResultsRequest" type="hl7:CareRecord_QUPC_IN043100UV01RequestType" />
+	<xsd:element name="SlotsQuery_PRSC_IN030101UVRequest" type="hl7:SlotRequest_PRSC_IN030101UVMessageType" />
+	-->
+        <!-- responses -->
+      
+        <xsd:element name="PatientDemographics_PRPA_MT201303UVMessage" type="hl7:PatientDemographics_PRPA_IN201308UVMessageType" />
+        <xsd:element name="PatientDemographics_PRPA_MT201303UVResponse" type="hl7:PatientDemographics_PRPA_MT201303UVResponseType" />
+       <!-- <xsd:element name="CareRecord_QUPC_IN043200UV01Response" type="hl7:CareRecord_QUPC_IN043200UV01ResponseType"/>
+        <xsd:element name="CareRecord_QUPC_IN043200UV01Message" type="hl7:CareRecord_QUPC_IN043200UV01MessageType" />-->
+	
+        <!--
+	
+	<xsd:element name="CareRecord_QUPC_IN040200UV01Message" type="hl7:CareRecord_QUPC_IN040200UV01MessageType" />
+	<xsd:element name="FindEncounters_PRPA_IN900350UV02Message" type="hl7:FindEncounters_PRPA_IN900350UV02MessageType" />
+	  
+	
+	<xsd:element name="FindPatients_PRPA_MT201310UVResponse" type="hl7:FindPatients_PRPA_MT201310UVResponseType" />
+	<xsd:element name="ProviderDetails_PRPM_IN306011UV01Response" type="hl7:ProviderDetails_PRPM_IN306011UV01ResponseType" />
+	<xsd:element name="SlotConfirmation_PRSC_IN030102UVMessage" type="hl7:SlotConfirmation_PRSC_IN030102UVMessageType" />
+	<xsd:element name="SlotRejection_PRSC_IN030103UVMessage" type="hl7:SlotRejection_PRSC_IN030103UVMessageType" />
+	<xsd:element name="SlotResponse_Message" type="hl7:SlotResponse_MessageType" />
+	<xsd:element name="ResultEvent_POLB_IN364000UV01Message" type="hl7:ResultEvent_POLB_IN364000UV01MessageType" />
+	<xsd:element name="ActReference_POOR_IN200911UVMessage" type="hl7:ActReference_POOR_IN200911UVMessageType" />
+	<xsd:element name="CareComposition_REPC_IN040200UVMessage" type="hl7:CareComposition_REPC_IN040200UVMessageType" />
+	<xsd:element name="SlotsQueryResponse_PRSC_IN030102UVMessage" type="hl7:SlotsQueryResponse_PRSC_IN030102UVMessageType" />
+        -->
+</xsd:schema>

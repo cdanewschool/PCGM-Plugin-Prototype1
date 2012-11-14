@@ -1,0 +1,438 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.1.6-hudson-317-. --><wsdl:definitions xmlns:tns="urn:gov:hhs:fha:nhinc:adapter:commondatalayer" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:hl7="urn:hl7-org:v3" xmlns:ns="http://schemas.xmlsoap.org/soap/encoding/" name="CommonDataLayerService" targetNamespace="urn:gov:hhs:fha:nhinc:adapter:commondatalayer">
+	<wsdl:documentation>
+     WSDL for Common Data Layer Service Consumer, receiving request for data
+  </wsdl:documentation>
+	<wsdl:types>
+		<xsd:schema targetNamespace="urn:gov:hhs:fha:nhinc:adapter:commondatalayer">
+			<xsd:import namespace="urn:hl7-org:v3" schemaLocation="AdapterCommonDataLayer.xsd_154.xsd" />
+		</xsd:schema>
+	</wsdl:types>
+	 <!--<wsdl:message name="FindEncountersRequest">
+		<wsdl:part name="param0" element="hl7:FindEncounters_PRPA_IN900300UV02Request" />
+	</wsdl:message>
+	<wsdl:message name="FindEncountersResponse">
+		<wsdl:part name="output" element="hl7:FindEncounters_PRPA_IN900350UV02Message" />
+	</wsdl:message>
+	<wsdl:message name="GetProceduresRequest">
+		<wsdl:part name="param0" element="hl7:CareRecord_QUPC_IN043100UV01ProceduresRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetProceduresResponse">
+		<wsdl:part name="output" element="hl7:CareRecord_QUPC_IN043200UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="GetMedicationsRequest">
+		<wsdl:part name="param0" element="hl7:CareRecord_QUPC_IN043100UV01MedicationsRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetMedicationsResponse">
+		<wsdl:part name="output" element="hl7:CareRecord_QUPC_IN043200UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="GetAllergiesRequest">
+		<wsdl:part name="param0" element="hl7:CareRecord_QUPC_IN043100UV01AllergiesRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetAllergiesResponse">
+		<wsdl:part name="output" element="hl7:CareRecord_QUPC_IN043200UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="GetVitalsRequest">
+		<wsdl:part name="param0" element="hl7:CareRecord_QUPC_IN043100UV01VitalsRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetVitalsResponse">
+		<wsdl:part name="output" element="hl7:CareRecord_QUPC_IN043200UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="GetProblemsRequest">
+		<wsdl:part name="param0" element="hl7:CareRecord_QUPC_IN043100UV01ProblemsRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetProblemsResponse">
+		<wsdl:part name="output" element="hl7:CareRecord_QUPC_IN043200UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="GetTestResultsRequest">
+		<wsdl:part name="param0" element="hl7:CareRecord_QUPC_IN043100UV01TestResultsRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetTestResultsResponse">
+		<wsdl:part name="output" element="hl7:CareRecord_QUPC_IN043200UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="GetImagingResultsRequest">
+		<wsdl:part name="param0" element="hl7:CareRecord_QUPC_IN043100UV01ImagingResultsRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetImagingResultsResponse">
+		<wsdl:part name="output" element="hl7:CareRecord_QUPC_IN043200UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="GetImmunizationsRequest">
+		<wsdl:part name="param0" element="hl7:CareRecord_QUPC_IN043100UV01ImmunizationsRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetImmunizationsResponse">
+		<wsdl:part name="output" element="hl7:CareRecord_QUPC_IN043200UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="GetFamilyHistoryRequest">
+		<wsdl:part name="param0" element="hl7:CareRecord_QUPC_IN043100UV01FamilyHistoryRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetFamilyHistoryResponse">
+		<wsdl:part name="output" element="hl7:CareRecord_QUPC_IN043200UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="GetSocialHistoryRequest">
+		<wsdl:part name="param0" element="hl7:CareRecord_QUPC_IN043100UV01SocialHistoryRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetSocialHistoryResponse">
+		<wsdl:part name="output" element="hl7:CareRecord_QUPC_IN043200UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="GetInsurancesRequest">
+		<wsdl:part name="param0" element="hl7:CareRecord_QUPC_IN043100UV01Request" />
+	</wsdl:message>
+	<wsdl:message name="GetInsurancesResponse">
+		<wsdl:part name="output" element="hl7:CareRecord_QUPC_IN043200UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="GetOrdersRequest">
+		<wsdl:part name="param0" element="hl7:CareRecord_QUPC_IN043100UV01OrdersRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetOrdersResponse">
+		<wsdl:part name="output" element="hl7:CareRecord_QUPC_IN043200UV01Message" />
+	</wsdl:message>-->
+	<wsdl:message name="GetPatienInfoRequest">
+		<wsdl:part name="param0" element="hl7:PatientDemographics_PRPA_IN201307UV02Request" />
+	</wsdl:message>
+	<wsdl:message name="GetPatienInfoResponse">
+		<wsdl:part name="output" element="hl7:PatientDemographics_PRPA_MT201303UVResponse" />
+	</wsdl:message>
+	 <!--<wsdl:message name="FindPatientsRequest">
+		<wsdl:part name="param0" element="hl7:FindPatients_PRPA_IN201305UVRequest" />
+	</wsdl:message>
+	<wsdl:message name="FindPatientsResponse">
+		<wsdl:part name="output" element="hl7:FindPatients_PRPA_MT201310UVResponse" />
+	</wsdl:message>
+	<wsdl:message name="FindProvidersRequest">
+		<wsdl:part name="param0" element="hl7:ProviderDetails_PRPM_IN306010UV1Request" />
+	</wsdl:message>
+	<wsdl:message name="FindProvidersResponse">
+		<wsdl:part name="output" element="hl7:ProviderDetails_PRPM_IN306011UV01Response" />
+	</wsdl:message>
+	<wsdl:message name="AppointmentBySlotRequest">
+		<wsdl:part name="param0" element="hl7:SlotRequest_PRSC_IN030101UVMessage" />
+	</wsdl:message>
+	<wsdl:message name="AppointmentBySlotResponse">
+		<wsdl:part name="output" element="hl7:SlotResponse_Message" />
+	</wsdl:message>
+	<wsdl:message name="FindResultEventQueryRequest">
+		<wsdl:part name="param0" element="hl7:ResultQuery_POLB_IN354000UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="FindResultEventQueryResponse">
+		<wsdl:part name="output" element="hl7:ResultEvent_POLB_IN364000UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="CompositeLabOrderRequest">
+		<wsdl:part name="param0" element="hl7:CompositeOrder_POOR_IN200901UVLabRequest" />
+	</wsdl:message>
+	<wsdl:message name="CompositeLabOrderResponse">
+		<wsdl:part name="output" element="hl7:ActReference_POOR_IN200911UVMessage" />
+	</wsdl:message>
+	<wsdl:message name="GetAmbEncounterDetailsRequest">
+		<wsdl:part name="param0" element="hl7:AMBCareRecord_QUPC_IN040100UV01Request" />
+	</wsdl:message>
+	<wsdl:message name="GetAmbEncounterDetailsResponse">
+		<wsdl:part name="output" element="hl7:CareRecord_QUPC_IN040200UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="GetImpEncounterDetailsRequest">
+		<wsdl:part name="param0" element="hl7:IMPCareRecord_QUPC_IN040100UV01Request" />
+	</wsdl:message>
+	<wsdl:message name="GetImpEncounterDetailsResponse">
+		<wsdl:part name="output" element="hl7:CareRecord_QUPC_IN040200UV01Message" />
+	</wsdl:message>
+	<wsdl:message name="FindSlotsRequest">
+		<wsdl:part name="param0" element="hl7:SlotsQuery_PRSC_IN030101UVRequest" />
+	</wsdl:message>
+	<wsdl:message name="FindSlotsResponse">
+		<wsdl:part name="output" element="hl7:SlotsQueryResponse_PRSC_IN030102UVMessage" />
+	</wsdl:message>	-->
+	<wsdl:portType name="CommonDataLayerPortType">
+		 <!--<wsdl:operation name="FindEncounters">
+			<wsdl:input message="tns:FindEncountersRequest" />
+			<wsdl:output message="tns:FindEncountersResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="GetProcedures">
+			<wsdl:input message="tns:GetProceduresRequest" />
+			<wsdl:output message="tns:GetProceduresResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="GetMedications">
+			<wsdl:input message="tns:GetMedicationsRequest" />
+			<wsdl:output message="tns:GetMedicationsResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="GetAllergies">
+			<wsdl:input message="tns:GetAllergiesRequest" />
+			<wsdl:output message="tns:GetAllergiesResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="GetVitals">
+			<wsdl:input message="tns:GetVitalsRequest" />
+			<wsdl:output message="tns:GetVitalsResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="GetProblems">
+			<wsdl:input message="tns:GetProblemsRequest" />
+			<wsdl:output message="tns:GetProblemsResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="GetTestResults">
+			<wsdl:input message="tns:GetTestResultsRequest" />
+			<wsdl:output message="tns:GetTestResultsResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="GetImagingResults">
+			<wsdl:input message="tns:GetImagingResultsRequest" />
+			<wsdl:output message="tns:GetImagingResultsResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="GetImmunizations">
+			<wsdl:input message="tns:GetImmunizationsRequest" />
+			<wsdl:output message="tns:GetImmunizationsResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="GetFamilyHistory">
+			<wsdl:input message="tns:GetFamilyHistoryRequest" />
+			<wsdl:output message="tns:GetFamilyHistoryResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="GetSocialHistory">
+			<wsdl:input message="tns:GetSocialHistoryRequest" />
+			<wsdl:output message="tns:GetSocialHistoryResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="GetInsurances">
+			<wsdl:input message="tns:GetInsurancesRequest" />
+			<wsdl:output message="tns:GetInsurancesResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="GetOrders">
+			<wsdl:input message="tns:GetOrdersRequest" />
+			<wsdl:output message="tns:GetOrdersResponse" />
+		</wsdl:operation>-->
+		<wsdl:operation name="GetPatienInfo">
+			<wsdl:input message="tns:GetPatienInfoRequest" />
+			<wsdl:output message="tns:GetPatienInfoResponse" />
+		</wsdl:operation>
+		 <!--<wsdl:operation name="FindPatients">
+			<wsdl:input message="tns:FindPatientsRequest" />
+			<wsdl:output message="tns:FindPatientsResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="FindProviders">
+			<wsdl:input message="tns:FindProvidersRequest" />
+			<wsdl:output message="tns:FindProvidersResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="AppointmentSlotRequest">
+			<wsdl:input message="tns:AppointmentBySlotRequest" />
+			<wsdl:output message="tns:AppointmentBySlotResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="FindResultEventQuery">
+			<wsdl:input message="tns:FindResultEventQueryRequest" />
+			<wsdl:output message="tns:FindResultEventQueryResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="LabOrderRequest">
+			<wsdl:input message="tns:CompositeLabOrderRequest" />
+			<wsdl:output message="tns:CompositeLabOrderResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="GetAmbEncounterDetails">
+			<wsdl:input message="tns:GetAmbEncounterDetailsRequest" />
+			<wsdl:output message="tns:GetAmbEncounterDetailsResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="GetImpEncounterDetails">
+			<wsdl:input message="tns:GetImpEncounterDetailsRequest" />
+			<wsdl:output message="tns:GetImpEncounterDetailsResponse" />
+		</wsdl:operation>
+		<wsdl:operation name="FindSlots">
+			<wsdl:input message="tns:FindSlotsRequest" />
+			<wsdl:output message="tns:FindSlotsResponse" />
+		</wsdl:operation>	-->
+	</wsdl:portType>
+	<wsdl:binding name="CommonDataLayerPortTypeBinding" type="tns:CommonDataLayerPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		 <!--<wsdl:operation name="FindEncounters">
+			<soap:operation soapAction="urn:FindEncounters" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetProcedures">
+			<soap:operation soapAction="urn:Procedures" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetMedications">
+			<soap:operation soapAction="urn:Medications" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetAllergies">
+			<soap:operation soapAction="urn:Allergies" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetVitals">
+			<soap:operation soapAction="urn:Vitals" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetProblems">
+			<soap:operation soapAction="urn:Problems" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetTestResults">
+			<soap:operation soapAction="urn:TestResults" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetImagingResults">
+			<soap:operation soapAction="urn:ImagingResults" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetImmunizations">
+			<soap:operation soapAction="urn:Immunizations" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetFamilyHistory">
+			<soap:operation soapAction="urn:FamilyHistory" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetSocialHistory">
+			<soap:operation soapAction="urn:SocialHistory" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetInsurances">
+			<soap:operation soapAction="urn:Insurances" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetOrders">
+			<soap:operation soapAction="urn:Orders" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation> -->
+		<wsdl:operation name="GetPatienInfo">
+			<soap:operation soapAction="urn:GetPatienInfo" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		 <!--<wsdl:operation name="FindPatients">
+			<soap:operation soapAction="urn:FindPatients" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="FindProviders">
+			<soap:operation soapAction="urn:FindProviders" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="AppointmentSlotRequest">
+			<soap:operation soapAction="urn:AppointmentSlotRequest" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="FindResultEventQuery">
+			<soap:operation soapAction="urn:FindResultEventQuery" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="LabOrderRequest">
+			<soap:operation soapAction="urn:LabOrderRequest" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetAmbEncounterDetails">
+			<soap:operation soapAction="urn:GetAmbEncounterDetails" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetImpEncounterDetails">
+			<soap:operation soapAction="urn:GetImpEncounterDetails" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="FindSlots">
+			<soap:operation soapAction="urn:FindSlots" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>	-->
+	</wsdl:binding>
+	<wsdl:service name="CommonDataLayerService">
+		<wsdl:port name="CommonDataLayerPort" binding="tns:CommonDataLayerPortTypeBinding">
+			<soap:address location="http://solutions-it.org:8080/CommonDataLayerService/AdapterCommonDataLayer" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

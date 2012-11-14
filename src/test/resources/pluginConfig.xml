@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<pluginConfig>
+	<Operation name="PatientDemographicsPRPAMT201303UVResponseType">
+		<functionPrivate name="PRPAMT201303UV02Patient"/>
+		<functionPrivate name="II" vparent="subject" />
+		<functionPrivate name="PRPAMT201303UV02Person" vparent="subject" />
+		<functionPrivate name="PNExplicit" vparent="patientPerson" tparent="PRPAMT201303UV02Person"/>
+		<functionPrivate name="CE" nname="administrativeGenderCode" vparent="patientPerson" tparent="PRPAMT201303UV02Person"/>
+		<functionPrivate name="TSExplicit" nname="birthTime" vparent="patientPerson" tparent="PRPAMT201303UV02Person"/>
+		<functionPublic name="patientLastName" vparent="name" thl7="EnExplicitFamily" 	tparent="PNExplicit" trtype="String"/>
+		<functionPublic name="patientFirstName" vparent="name" thl7="EnExplicitGiven" tparent="PNExplicit" trtype="String"/>
+		<functionPublic name="patientGender" vparent="administrativeGenderCode" thl7="ANY" tparent="CE" trtype="Code"/>
+		<function fmod="Private" name="PRPAMT201303UV02Patient"/>
+		<function fmod="Private" name="II" vparent="subject" />
+		<function fmod="Private" name="PRPAMT201303UV02Person" vparent="subject" />
+		<function fmod="Private" name="PNExplicit" vparent="patientPerson" tparent="PRPAMT201303UV02Person"/>
+		<function fmod="Private" name="CE" nname="administrativeGenderCode" vparent="patientPerson" tparent="PRPAMT201303UV02Person"/>
+		<function fmod="Private" name="TSExplicit" nname="birthTime" vparent="patientPerson" tparent="PRPAMT201303UV02Person"/>
+		<function fmod="Public" name="patientLastName" vparent="name" thl7="EnExplicitFamily" 	tparent="PNExplicit" trtype="String"/>
+		<function fmod="Public" name="patientFirstName" vparent="name" thl7="EnExplicitGiven" tparent="PNExplicit" trtype="String"/>
+		<function fmod="Public" name="patientGender" vparent="administrativeGenderCode" thl7="none" tparent="CE" trtype="String"/>
+		<!--<functionPublic name="patientGender" vparent="administrativeGenderCode" thl7="none" tparent="CE" trtype="String"/>
+		<functionPublic name="patientBirthTime" vparent="birthTime" thl7="" tparent="TSExplicit" trtype="String"/>-->
+	</Operation>
+</pluginConfig>
