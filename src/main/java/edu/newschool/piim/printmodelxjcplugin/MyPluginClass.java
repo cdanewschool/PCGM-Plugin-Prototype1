@@ -54,14 +54,14 @@ import org.w3c.dom.*;
  * @author marinekosh
  */
 public class MyPluginClass extends Plugin {
- Boolean isList = false;
- Boolean isJAXB = false;
- JDefinedClass firstClass = null;
- String prevMethod = null;
- Boolean isFunctionPrivate = false;
+Boolean isList = false;
+Boolean isJAXB = false;
+JDefinedClass firstClass = null;
+String prevMethod = null;
+Boolean isFunctionPrivate = false;
 // Boolean isPrivate = false;
- Boolean isFunctionPublic = false;
- Boolean isListS= false;
+Boolean isFunctionPublic = false;
+Boolean isListS= false;
 String prevType = null;
 Map publicFunctionsMap = new LinkedHashMap();
 Map ParametersMap = new LinkedHashMap();
@@ -111,10 +111,9 @@ Boolean isSubClass = false;
            return true;
     }
 
- public void createRequestClass(Outline outline) throws SAXException, IOException {
+ private void createRequestClass(Outline outline) throws SAXException, IOException {
       try {
             JCodeModel pcgmCodeModel = new JCodeModel();
-            String methodName = null;
             //Create One Class that handles the generation of all Request Types
             JDefinedClass pcgmClass = pcgmCodeModel._class("edu.newschool.piim.generatedCode.pcgmHelperRequests");
             //Create a Function, within the Request Class, for each Request Type 
@@ -132,13 +131,12 @@ Boolean isSubClass = false;
                             System.out.println("RequestMap KEY: " + key + ", VALUE: "+ value);
                             Class<String> type = String.class;
                             pcgmMethod.param(type, value.toString());
-                           
                     }
               
                     JBlock pcgmBlock = pcgmMethod.body();
-                    methodName = createRequestMethodBody(outline, requestType, pcgmBlock, "RqstMsg");
+                    createRequestMethodBody(outline, requestType, pcgmBlock, "RqstMsg");
                     pcgmBlock._return(JExpr.ref("RqstMsg"));
-                    pcgmMethod.name("createRequest" + methodName);
+                    pcgmMethod.name("createRequest" + request);
                 }       
              }
 
@@ -163,7 +161,11 @@ Boolean isSubClass = false;
  }
  
  private boolean isVariable(String var) throws SAXException, IOException{
+    //TODO: optimization - don't call the getRequestMap everytime as long as the request has not changed and the map is not empty
     getRequestMap("Variables");
+    if (VariablesMap.containsKey(var)) {
+         return true;
+    }
     for (Iterator it = VariablesMap.keySet().iterator(); it.hasNext(); ) {
         Object key = it.next();
         Object value = VariablesMap.get(key); 
@@ -175,7 +177,17 @@ Boolean isSubClass = false;
     return false;
  }
  
+ private boolean isParameter(String var){
+    if (ParametersMap.containsKey(var)){
+        return true;
+    }
+        return false;
+ }
+ 
  private String shortFieldType(String ftn){
+      isList = false;
+      isListS = false;
+      isJAXB = false;
      if (ftn.contains("List<")){
           if (ftn.contains("List<Serializable>")) {
              isListS = true;
@@ -192,111 +204,101 @@ Boolean isSubClass = false;
      return ftn;
  }
          
- public String createRequestMethodBody(Outline outline, String nextType, JBlock pcgmBlock, String varName) throws JClassAlreadyExistsException, SAXException, IOException{
-     String methodName = null;
+ private void createRequestMethodBody(Outline outline, String nextType, JBlock pcgmBlock, String varName) throws JClassAlreadyExistsException, SAXException, IOException{
      String nt = nextType;
      
      outterLoop:
      for (ClassOutline classOutline : outline.getClasses()) {
            JDefinedClass implClass = classOutline.implClass;
-           String ss;
-           String s;
-           
-          
-           
-           
+           String fieldName;
+           String fieldNameUpper;
+           String fieldTypeFullName; 
+        
+           //The POJOS for types CS,CE,CV,CR,CO do not have thier own fields they extend from CD abd they were not being picked up 
+           //This is so we get the elements/attributes from CD 
+           //The schema for CD has been altered so that we don't end up in an infinite loop
+           //TODO: better solution to altering schema for CD
            if (nextType.contains("CS") || nextType.contains("CE") || nextType.contains("CV") || nextType.contains("CR") || nextType.matches("CO")){
                nextType = "CD";
            } 
           
            if (implClass.name().matches(nt) && !implClass.fullName().contains("generated")){
-                String var;
-                var = varName;
-                
-                
-                if (implClass.name().matches("QUPCIN043100UV01QUQIMT020001UV01ControlActProcess"))
-                {
+               
+                if (implClass.name().matches("QUPCMT040300UV01CareProvisionCode")){
                     System.out.println("THIS IS THE NEXT TYPE STRING PASSED TO FUNCTION: " + nextType);
                 }
                 
+                //Checks the confic file to see if there is an item that contains this variable name
                 if (!isVariable(varName)){
                     continue;
-                }
-                          
+                }       
                 JClass jClassavpImpl = implClass;
-                JVar jvar = pcgmBlock.decl(jClassavpImpl, var);
+                JVar jvar = pcgmBlock.decl(jClassavpImpl, varName);
                 jvar.init(JExpr._new(jClassavpImpl));
            }
            
            if (implClass.name().matches(nextType) && !implClass.fullName().contains("generated")){
-                String var;
-                var = varName;
-         
-                /*          
-                if (implClass.fields().isEmpty() && implClass._extends() != null){
-                    if (implClass._extends().fullName().contains("org.hl7.v3")){
-                        String cs = var+ "_" + implClass._extends().name();                
-                        createRequestMethodBody(outline, implClass._extends().name(), pcgmBlock, cs);   
-                    }
-                }
-                else  if (!implClass.fields().isEmpty() && implClass._extends() != null){
-                
-                } */
                 
                 for (JFieldVar field : implClass.fields().values()){
                     
-                   String fieldTypeFullName = field.type().fullName();
-                   
-                   ss = field.name();
-                   s = String.format( "%s%s", Character.toUpperCase(ss.charAt(0)), ss.substring(1) );
-                   String cs = var+ "_" + ss;
-                  
-                   isList = false;
-                   isListS = false;
-                   isJAXB = false;
+                   fieldTypeFullName = field.type().fullName();
+                   fieldName = field.name();
+                   fieldNameUpper = String.format( "%s%s", Character.toUpperCase(fieldName.charAt(0)), fieldName.substring(1) );
+                   String concatVariableName = varName+ "_" + fieldName;
+             
                    String ftn = field.type().name(); 
-                   String value;
+                   ftn = shortFieldType(ftn);  
+                   String value = getDefaultValue(concatVariableName);
+                   
+                   if(!value.matches("null")){
+                       if(isParameter(concatVariableName)){
+                           Map paramValues = new LinkedHashMap();
+                           paramValues = getValueArray(concatVariableName);
+                           if (paramValues.size()==1){
+                               for (Iterator it=paramValues.keySet().iterator(); it.hasNext(); ) {
+                                 Object key = it.next();
+                                 value = paramValues.get(key).toString();
+                               }
+                           }
+                       }
+                       pcgmBlock.directStatement(ftn+" "+concatVariableName+" = "+ value +";");   
+                   }     
                    if (fieldTypeFullName.contains("org.hl7.v3")) {
-                     ftn = shortFieldType(ftn);  
-                     
-                     //if (ftn.matches("CD") || ftn.matches("ED") || ftn.matches("CR")){
-                         //continue;
-                     //}
-                     
-                     value = getDefaultValue(cs);
-                     if ("null".equals(value)){
-                     
-                     }
-                     else{
-                         pcgmBlock.directStatement(ftn+" "+cs+" = "+ value +";");                   
-                     }
-                     createRequestMethodBody(outline, ftn, pcgmBlock, cs);
-                     pcgmBlock.directStatement(var+".set" +s+ "("+cs+");");
-                   } 
-                   else{
-                     ftn = shortFieldType(ftn);  
-                     value = getDefaultValue(cs);
-                      if ("null".equals(value)){
-                     
-                     }
-                     else{
-                         pcgmBlock.directStatement(ftn+" "+cs+" = "+ value +";"); 
-                         pcgmBlock.directStatement(var+".set" +s+ "(" +cs+");");
-                     }
-                     //pcgmBlock.directStatement(ftn+" "+cs+" = "+ value +";");  
-                     
-                     methodName = implClass.name();
+                       createRequestMethodBody(outline, ftn, pcgmBlock, concatVariableName);                      
                    }
-
-
-              }
-
+                   if (isVariable(concatVariableName)){
+                       pcgmBlock.directStatement(varName+".set" +fieldNameUpper+ "(" +concatVariableName+");");
+                   }  
+                }
            }
-
         }
-
-   return methodName;
   }
+
+ private Map getValueArray(String name) throws SAXException, IOException{
+      Document doc = null;
+      Map paramValues = new LinkedHashMap();
+     try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            DocumentBuilder builder;
+            builder = factory.newDocumentBuilder();
+            doc = builder.parse("src/test/resources/pluginConfigRequest.xml");
+                        
+                NodeList nodeList = doc.getElementsByTagName(name);
+                for(int i=0; i<nodeList.getLength(); i++){
+                    Object key = nodeList.item(i).getAttributes().getNamedItem("param").getNodeValue();
+                    Object value =  nodeList.item(i).getTextContent();
+                    paramValues.put(key, value);
+                }
+                
+       } catch (ParserConfigurationException ex) {
+            Logger.getLogger(MyPluginClass.class.getName()).log(Level.SEVERE, null, ex);
+            //paramValues.clear();
+            //isFunctionPublic = false;
+       }    
+        return paramValues;
+      
+ }
  private void getRequestMap(String valueType) throws SAXException, IOException{
         Document doc = null;
         Object key;
@@ -382,7 +384,7 @@ Boolean isSubClass = false;
                                
        } catch (ParserConfigurationException ex) {
             Logger.getLogger(MyPluginClass.class.getName()).log(Level.SEVERE, null, ex);
-            isFunctionPublic = false;
+            //isFunctionPublic = false;
        }
         
        return "null";
@@ -421,7 +423,7 @@ Boolean isSubClass = false;
 // </editor-fold>
 
  private void privateFunction(String findType) throws SAXException, IOException{
-        Document doc = null;
+        Document doc;
         isFunctionPrivate = false;
       
         try {
@@ -440,8 +442,9 @@ Boolean isSubClass = false;
                     if (findType.equals(nodeList.item(i).getAttributes().item(0).getNodeValue())){
                         //TODO: find parent from original xml schema instead of config file
                         // we use the variable of the parent node to call the function to create the parent.
-                        if (nodeList.item(i).getAttributes().getNamedItem("vparent") != null)
+                        if (nodeList.item(i).getAttributes().getNamedItem("vparent") != null) {
                             parentPrv = nodeList.item(i).getAttributes().getNamedItem("vparent").getNodeValue();
+                        }
                         isFunctionPrivate = true;
                         break;
                     }
@@ -647,10 +650,12 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                       directStmnt = varName + " = " + parentUp+"(param1)."+varUp+"()";
                     }
                    //if the nextType is/was a list then we need to use the .get(index) method.
-                   if (isList)
-                      directStmnt = directStmnt+".get(0);";
-                   else
-                      directStmnt = directStmnt+";";
+                   if (isList) {
+                       directStmnt = directStmnt+".get(0);";
+                   }
+                   else {
+                       directStmnt = directStmnt+";";
+                   }
                    pcgmBlock.directStatement(directStmnt);
                    pcgmBlock._return(jvar);
                 }
