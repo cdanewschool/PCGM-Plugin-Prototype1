@@ -251,17 +251,12 @@ Boolean isSubClass = false;
                    String value = getDefaultValue(concatVariableName);
                    
                    if(!value.matches("null")){
-                       if(isParameter(concatVariableName)){
-                           Map paramValues = new LinkedHashMap();
-                           paramValues = getValueArray(concatVariableName);
-                           if (paramValues.size()==1){
-                               for (Iterator it=paramValues.keySet().iterator(); it.hasNext(); ) {
-                                 Object key = it.next();
-                                 value = paramValues.get(key).toString();
-                               }
-                           }
+                       if(value.matches("param")){
+                           setParamValueDS(concatVariableName, pcgmBlock);                 
                        }
+                       else{
                        pcgmBlock.directStatement(ftn+" "+concatVariableName+" = "+ value +";");   
+                       }
                    }     
                    if (fieldTypeFullName.contains("org.hl7.v3")) {
                        createRequestMethodBody(outline, ftn, pcgmBlock, concatVariableName);                      
@@ -273,9 +268,33 @@ Boolean isSubClass = false;
            }
         }
   }
-
+ private String setParamValueDS(String concatVariableName, JBlock pcgmBlock) throws SAXException, IOException{
+     Map paramValues;
+     paramValues = getValueArray(concatVariableName);
+    
+     if (paramValues.size()==1){
+        for (Iterator it=paramValues.keySet().iterator(); it.hasNext(); ) {
+              Object key = it.next();
+              //Object value = paramValues.get(key).toString();
+              pcgmBlock.directStatement(concatVariableName+" = "+key);      
+        }
+        return null;
+     }
+     if (paramValues.size()>1){
+        JSwitch jc = pcgmBlock._switch(JExpr.direct("("+ "careRecordTypeTEST" +")")); 
+        for (Iterator it=paramValues.keySet().iterator(); it.hasNext(); ) {
+              Object key = it.next();
+              String value = paramValues.get(key).toString();
+              jc._case(JExpr.direct(value)).label();
+              jc._case(JExpr.direct(concatVariableName + "=" + key.toString())).body();  
+        }
+     }
+     
+    return null;
+ }
+ 
  private Map getValueArray(String name) throws SAXException, IOException{
-      Document doc = null;
+      Document doc;
       Map paramValues = new LinkedHashMap();
      try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -283,7 +302,7 @@ Boolean isSubClass = false;
             DocumentBuilder builder;
             builder = factory.newDocumentBuilder();
             doc = builder.parse("src/test/resources/pluginConfigRequest.xml");
-                        
+                
                 NodeList nodeList = doc.getElementsByTagName(name);
                 for(int i=0; i<nodeList.getLength(); i++){
                     Object key = nodeList.item(i).getAttributes().getNamedItem("param").getNodeValue();
@@ -376,7 +395,24 @@ Boolean isSubClass = false;
                                 return nodeList2.item(i).getChildNodes().item(j).getChildNodes().item(k).getTextContent();
                               }     
                            }
-                        }    
+                        } 
+                        
+                    }
+                    for(int j=0; j<(nodeList2.item(i).getChildNodes().getLength()); j++){
+                        if("Parameters".matches(nodeList2.item(i).getChildNodes().item(j).getNodeName())){
+                            for(int k=0; k<(nodeList2.item(i).getChildNodes().item(j).getChildNodes().getLength()); k++){
+                              if(name.matches(nodeList2.item(i).getChildNodes().item(j).getChildNodes().item(k).getNodeName())){
+                                return "param";
+                                  //return nodeList2.item(i).getChildNodes().item(j).getChildNodes().item(k).getTextContent();
+                              }     
+                           }
+                            
+                           /*for(int k=0; k<(nodeList2.item(i).getChildNodes().item(j).getChildNodes().getLength()); k++){
+                              if(name.matches(nodeList2.item(i).getChildNodes().item(j).getChildNodes().item(k).getNodeName())){
+                                return nodeList2.item(i).getChildNodes().item(j).getChildNodes().item(k).getTextContent();
+                              }     
+                           }*/
+                        } 
                     }
                 }
                

@@ -2,9 +2,9 @@
 <pluginConfigRequest>
 	<CareRecordQUPCIN043100UV01RequestType>
 		<Parameters>
-			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_patientId_value_extension name="patientId" param="0">"0"</RqstMsg_query_controlActProcess_queryByParameter_parameterList_patientId_value_extension>
-			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="Allergies">INTOLIST</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
-			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="Problems">PROBLIST</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_patientId_value_extension name="patientId" param="patientId">"0"</RqstMsg_query_controlActProcess_queryByParameter_parameterList_patientId_value_extension>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="INTOLIST">"Allergies"</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="PROBLIST">"Problems"</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
 		</Parameters>
 		<Variables>
 			<RqstMsg_localDeviceId>"1.1"</RqstMsg_localDeviceId>
