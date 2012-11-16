@@ -21,7 +21,7 @@ public class PrintPluginTest extends RunXJC2Mojo {
     protected void configureMojo(AbstractXJC2Mojo mojo) {
         super.configureMojo(mojo);
         mojo.setForceRegenerate(true);
-        mojo.setWriteCode(false);
+        mojo.setWriteCode(true);
         
     }
 
