@@ -131,6 +131,18 @@ Boolean isSubClass = false;
                             System.out.println("RequestMap KEY: " + key + ", VALUE: "+ value);
                             Class<String> type = String.class;
                             pcgmMethod.param(type, value.toString());
+                            
+                            Map paramValues;
+                            paramValues = getValueArray(key.toString());
+                            if (paramValues.size()>1){
+                                JDefinedClass jec = pcgmClass._enum(JMod.PUBLIC, value.toString()+"s");
+                                 for (Iterator pvit=paramValues.keySet().iterator(); pvit.hasNext(); ) {
+                                    Object pvkey = pvit.next();
+                                    String pvvalue = paramValues.get(pvkey).toString();
+                                    jec.enumConstant(pvvalue);
+                                 }
+                            }
+                            
                     }
               
                     JBlock pcgmBlock = pcgmMethod.body();
@@ -160,49 +172,7 @@ Boolean isSubClass = false;
         }
  }
  
- private boolean isVariable(String var) throws SAXException, IOException{
-    //TODO: optimization - don't call the getRequestMap everytime as long as the request has not changed and the map is not empty
-    getRequestMap("Variables");
-    if (VariablesMap.containsKey(var)) {
-         return true;
-    }
-    for (Iterator it = VariablesMap.keySet().iterator(); it.hasNext(); ) {
-        Object key = it.next();
-        Object value = VariablesMap.get(key); 
-        System.out.println("VariableMap KEY: " + key + ", VALUE: "+ value);
-        if (key.toString().contains(var)){
-            return true;
-        }
-    }
-    return false;
- }
  
- private boolean isParameter(String var){
-    if (ParametersMap.containsKey(var)){
-        return true;
-    }
-        return false;
- }
- 
- private String shortFieldType(String ftn){
-      isList = false;
-      isListS = false;
-      isJAXB = false;
-     if (ftn.contains("List<")){
-          if (ftn.contains("List<Serializable>")) {
-             isListS = true;
-          }
-          int size = ftn.length()-1;
-          ftn = ftn.substring(5, size);
-          isList = true;
-      }
-      else if (ftn.contains("JAXBElement")){
-          int size = ftn.length()-1;
-          ftn = ftn.substring(12, size);
-          isJAXB = true;
-     }
-     return ftn;
- }
          
  private void createRequestMethodBody(Outline outline, String nextType, JBlock pcgmBlock, String varName) throws JClassAlreadyExistsException, SAXException, IOException{
      String nt = nextType;
@@ -268,10 +238,53 @@ Boolean isSubClass = false;
            }
         }
   }
+ private boolean isVariable(String var) throws SAXException, IOException{
+    //TODO: optimization - don't call the getRequestMap everytime as long as the request has not changed and the map is not empty
+    getRequestMap("Variables");
+    if (VariablesMap.containsKey(var)) {
+         return true;
+    }
+    for (Iterator it = VariablesMap.keySet().iterator(); it.hasNext(); ) {
+        Object key = it.next();
+        Object value = VariablesMap.get(key); 
+        System.out.println("VariableMap KEY: " + key + ", VALUE: "+ value);
+        if (key.toString().contains(var)){
+            return true;
+        }
+    }
+    return false;
+ }
+ 
+ private boolean isParameter(String var){
+    if (ParametersMap.containsKey(var)){
+        return true;
+    }
+        return false;
+ }
+ 
+ private String shortFieldType(String ftn){
+      isList = false;
+      isListS = false;
+      isJAXB = false;
+     if (ftn.contains("List<")){
+          if (ftn.contains("List<Serializable>")) {
+             isListS = true;
+          }
+          int size = ftn.length()-1;
+          ftn = ftn.substring(5, size);
+          isList = true;
+      }
+      else if (ftn.contains("JAXBElement")){
+          int size = ftn.length()-1;
+          ftn = ftn.substring(12, size);
+          isJAXB = true;
+     }
+     return ftn;
+ }
  private String setParamValueDS(String concatVariableName, JBlock pcgmBlock) throws SAXException, IOException{
      Map paramValues;
      paramValues = getValueArray(concatVariableName);
-    
+     String paramName = null;
      if (paramValues.size()==1){
         for (Iterator it=paramValues.keySet().iterator(); it.hasNext(); ) {
               Object key = it.next();
@@ -281,12 +294,25 @@ Boolean isSubClass = false;
         return null;
      }
      if (paramValues.size()>1){
-        JSwitch jc = pcgmBlock._switch(JExpr.direct("("+ "careRecordTypeTEST" +")")); 
+        
+         if(ParametersMap.containsKey(concatVariableName)){
+             Object pn = ParametersMap.get(concatVariableName).toString();
+             paramName = (String) pn;
+            }
+     
+        JExpression jx = JExpr.direct(paramName+"s" + ".valueOf("+paramName+")");
+        JSwitch jc = pcgmBlock._switch(jx); 
+       
         for (Iterator it=paramValues.keySet().iterator(); it.hasNext(); ) {
               Object key = it.next();
               String value = paramValues.get(key).toString();
-              jc._case(JExpr.direct(value)).label();
-              jc._case(JExpr.direct(concatVariableName + "=" + key.toString())).body();  
+              JCase case1 = jc._case(JExpr.direct(value));
+              JBlock body = case1.body();
+              body.directStatement(concatVariableName + " = \"" + key.toString()+ "\";");
+              case1.body()._break();
+              //body.add(JStatement.class)
+             
+              
         }
      }
      
@@ -403,10 +429,11 @@ Boolean isSubClass = false;
                             for(int k=0; k<(nodeList2.item(i).getChildNodes().item(j).getChildNodes().getLength()); k++){
                               if(name.matches(nodeList2.item(i).getChildNodes().item(j).getChildNodes().item(k).getNodeName())){
                                 return "param";
+                                ///return nodeList2.item(i).getChildNodes().item(j).getChildNodes().item(k).getAttributes().getNamedItem("name").getNodeValue();  
                                   //return nodeList2.item(i).getChildNodes().item(j).getChildNodes().item(k).getTextContent();
-                              }     
-                           }
-                            
+                              }
+                            }
+                            //return "notparam";
                            /*for(int k=0; k<(nodeList2.item(i).getChildNodes().item(j).getChildNodes().getLength()); k++){
                               if(name.matches(nodeList2.item(i).getChildNodes().item(j).getChildNodes().item(k).getNodeName())){
                                 return nodeList2.item(i).getChildNodes().item(j).getChildNodes().item(k).getTextContent();
