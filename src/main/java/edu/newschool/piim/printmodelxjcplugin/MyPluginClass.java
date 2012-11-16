@@ -131,16 +131,20 @@ Boolean isSubClass = false;
                             System.out.println("RequestMap KEY: " + key + ", VALUE: "+ value);
                             Class<String> type = String.class;
                             pcgmMethod.param(type, value.toString());
-                            
+                           
                             Map paramValues;
                             paramValues = getValueArray(key.toString());
                             if (paramValues.size()>1){
                                 JDefinedClass jec = pcgmClass._enum(JMod.PUBLIC, value.toString()+"s");
+                                String javaDocString = value.toString() + " may have values: "; 
+                                pcgmMethod.javadoc().append(javaDocString);
                                  for (Iterator pvit=paramValues.keySet().iterator(); pvit.hasNext(); ) {
                                     Object pvkey = pvit.next();
                                     String pvvalue = paramValues.get(pvkey).toString();
                                     jec.enumConstant(pvvalue);
+                                    pcgmMethod.javadoc().append(pvvalue);
                                  }
+                                
                             }
                             
                     }
