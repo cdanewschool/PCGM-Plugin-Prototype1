@@ -40,6 +40,7 @@ import com.sun.tools.ws.wscompile.WsimportOptions;
 import com.sun.tools.ws.wsdl.document.Service;
 import com.sun.tools.xjc.BadCommandLineException;
 import com.sun.tools.xjc.model.CElementInfo;
+import com.sun.tools.xjc.outline.EnumOutline;
 import com.sun.tools.xjc.outline.FieldOutline;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -64,12 +65,14 @@ Boolean isFunctionPublic = false;
 Boolean isListS= false;
 String prevType = null;
 Map publicFunctionsMap = new LinkedHashMap();
-Map ParametersMap = new LinkedHashMap();
-Map VariablesMap = new LinkedHashMap();
 String parentPrv = null;
 String parentPub = null;
 String parentType;
 Boolean isSubClass = false;
+//Request
+Map ParametersMap = new LinkedHashMap();
+Map VariablesMap = new LinkedHashMap();
+
 
 //TODO: g- test this with more than one request and response type in the xml schema
 //TODO: g- look into why there are duplicate java files in the 'generated' folder, this does not occur at actual CAL wsimport time
@@ -114,6 +117,7 @@ Boolean isSubClass = false;
  private void createRequestClass(Outline outline) throws SAXException, IOException {
       try {
             JCodeModel pcgmCodeModel = new JCodeModel();
+            pcgmCodeModel.rootPackage();
             //Create One Class that handles the generation of all Request Types
             JDefinedClass pcgmClass = pcgmCodeModel._class("edu.newschool.piim.generatedCode.pcgmHelperRequests");
             //Create a Function, within the Request Class, for each Request Type 
@@ -123,12 +127,12 @@ Boolean isSubClass = false;
                     String requestType = implClass.name();
                     request = requestType;
                     JMethod pcgmMethod = pcgmClass.method(JMod.PUBLIC, implClass, "createRequest_pcgm");
-                    
+                    getRequestMap("Variables");
                     getRequestMap("Parameters");
                     for (Iterator it=ParametersMap.keySet().iterator(); it.hasNext(); ) {
                             Object key = it.next();
                             Object value = ParametersMap.get(key); 
-                            System.out.println("RequestMap KEY: " + key + ", VALUE: "+ value);
+                            //System.out.println("RequestMap KEY: " + key + ", VALUE: "+ value);
                             Class<String> type = String.class;
                             pcgmMethod.param(type, value.toString());
                            
@@ -159,7 +163,7 @@ Boolean isSubClass = false;
             try {
                ByteArrayOutputStream out = new ByteArrayOutputStream();
                pcgmCodeModel.build(new SingleStreamCodeWriter(out));
-               System.out.println(out.toString());
+               //System.out.println(out.toString());
                
                String fileName = "pcgmHelperRequests";
 
@@ -180,7 +184,7 @@ Boolean isSubClass = false;
          
  private void createRequestMethodBody(Outline outline, String nextType, JBlock pcgmBlock, String varName) throws JClassAlreadyExistsException, SAXException, IOException{
      String nt = nextType;
-     
+    
      outterLoop:
      for (ClassOutline classOutline : outline.getClasses()) {
            JDefinedClass implClass = classOutline.implClass;
@@ -196,14 +200,14 @@ Boolean isSubClass = false;
                nextType = "CD";
            } 
           
-           if (implClass.name().matches(nt) && !implClass.fullName().contains("generated")){
+          if (implClass.name().matches(nt) && !implClass.fullName().contains("generated")){
                
-                if (implClass.name().matches("QUPCMT040300UV01CareProvisionCode")){
+                if (implClass.name().matches("MCCIMT000100UV01Device")){
                     System.out.println("THIS IS THE NEXT TYPE STRING PASSED TO FUNCTION: " + nextType);
                 }
                 
                 //Checks the confic file to see if there is an item that contains this variable name
-                if (!isVariable(varName)){
+                if ( !(isVariable(varName) || isParameter(varName))){
                     continue;
                 }       
                 JClass jClassavpImpl = implClass;
@@ -221,37 +225,50 @@ Boolean isSubClass = false;
                    String concatVariableName = varName+ "_" + fieldName;
              
                    String ftn = field.type().name(); 
+                   // returns the short type and sets values for isList, isListS, isJAXB
                    ftn = shortFieldType(ftn);  
-                   String value = getDefaultValue(concatVariableName);
-                   
+                   String value = getDefaultValue(concatVariableName); 
+                                    
+                   JVar lhs = null;
                    if(!value.matches("null")){
                        if(value.matches("param")){
+                           //pcgmBlock.directStatement(ftn+" "+concatVariableName+" = "+ null +";"); 
+                           lhs = pcgmBlock.decl(field.type(), concatVariableName, JExpr._null());
                            setParamValueDS(concatVariableName, pcgmBlock);                 
                        }
                        else{
-                       pcgmBlock.directStatement(ftn+" "+concatVariableName+" = "+ value +";");   
-                       }
+                          //pcgmBlock.directStatement(ftn+" "+concatVariableName+" = "+ value +";");
+                          lhs = pcgmBlock.decl(field.type(), concatVariableName, JExpr.direct(value));
+                       }   
                    }     
                    if (fieldTypeFullName.contains("org.hl7.v3")) {
                        createRequestMethodBody(outline, ftn, pcgmBlock, concatVariableName);                      
                    }
-                   if (isVariable(concatVariableName)){
+                  
+                   if (isVariable(concatVariableName) || isParameter(concatVariableName)){
+                       if (isListType(field.type().name())){
+                           pcgmBlock.directStatement(varName+".get" +fieldNameUpper+ "().add(" +concatVariableName+");");
+                       }
+                       else{
                        pcgmBlock.directStatement(varName+".set" +fieldNameUpper+ "(" +concatVariableName+");");
+                        //JInvocation ji = lhs.invoke("set" +fieldNameUpper);
+                        //ji.arg(concatVariableName); 
+                       }
+                       
                    }  
                 }
            }
         }
+         
   }
  private boolean isVariable(String var) throws SAXException, IOException{
-    //TODO: optimization - don't call the getRequestMap everytime as long as the request has not changed and the map is not empty
-    getRequestMap("Variables");
     if (VariablesMap.containsKey(var)) {
          return true;
     }
     for (Iterator it = VariablesMap.keySet().iterator(); it.hasNext(); ) {
         Object key = it.next();
-        Object value = VariablesMap.get(key); 
-        System.out.println("VariableMap KEY: " + key + ", VALUE: "+ value);
+        //Object value = VariablesMap.get(key); 
+        //System.out.println("VariableMap KEY: " + key + ", VALUE: "+ value);
         if (key.toString().contains(var)){
             return true;
         }
@@ -261,11 +278,29 @@ Boolean isSubClass = false;
  
  private boolean isParameter(String var){
     if (ParametersMap.containsKey(var)){
+      
         return true;
+    }
+    for (Iterator it = ParametersMap.keySet().iterator(); it.hasNext(); ) {
+        Object key = it.next();
+        //Object value = ParametersMap.get(key); 
+        //System.out.println("VariableMap KEY: " + key + ", VALUE: "+ value);
+        if (key.toString().contains(var)){
+            return true;
+        }
     }
         return false;
  }
- 
+ private boolean isListType(String ftn){
+     if (ftn.contains("List<")){
+          if (ftn.contains("List<Serializable>")) {
+             isListS = true;            
+          }               
+          isList = true;
+          return true;
+      }
+        return false;
+ }
  private String shortFieldType(String ftn){
       isList = false;
       isListS = false;
@@ -285,6 +320,7 @@ Boolean isSubClass = false;
      }
      return ftn;
  }
+ 
  private String setParamValueDS(String concatVariableName, JBlock pcgmBlock) throws SAXException, IOException{
      Map paramValues;
      paramValues = getValueArray(concatVariableName);
@@ -293,7 +329,7 @@ Boolean isSubClass = false;
         for (Iterator it=paramValues.keySet().iterator(); it.hasNext(); ) {
               Object key = it.next();
               //Object value = paramValues.get(key).toString();
-              pcgmBlock.directStatement(concatVariableName+" = "+key);      
+              pcgmBlock.directStatement(concatVariableName+" = "+key+ ";");      
         }
         return null;
      }
@@ -304,20 +340,24 @@ Boolean isSubClass = false;
              paramName = (String) pn;
             }
      
-        JExpression jx = JExpr.direct(paramName+"s" + ".valueOf("+paramName+")");
+        JExpression jx = JExpr.direct(paramName+"s" + ".valueOf("+paramName+")");      
         JSwitch jc = pcgmBlock._switch(jx); 
-       
+      
         for (Iterator it=paramValues.keySet().iterator(); it.hasNext(); ) {
               Object key = it.next();
               String value = paramValues.get(key).toString();
-              JCase case1 = jc._case(JExpr.direct(value));
+              JExpression je = JExpr.ref(value);   
+              JCase case1 = jc._case(je);
+              
               JBlock body = case1.body();
               body.directStatement(concatVariableName + " = \"" + key.toString()+ "\";");
-              case1.body()._break();
-              //body.add(JStatement.class)
-             
-              
+              case1.body()._break();            
         }
+        
+        JCase defaultCase = jc._default();
+        defaultCase.body().directStatement("System.out.println(\"No Valid Value!\");");
+        //defaultCase.body().directStatement(concatVariableName + " = \"" + key.toString()+ "\";");
+        
      }
      
     return null;
@@ -335,9 +375,11 @@ Boolean isSubClass = false;
                 
                 NodeList nodeList = doc.getElementsByTagName(name);
                 for(int i=0; i<nodeList.getLength(); i++){
-                    Object key = nodeList.item(i).getAttributes().getNamedItem("param").getNodeValue();
-                    Object value =  nodeList.item(i).getTextContent();
-                    paramValues.put(key, value);
+                    //if (nodeList.item(i).getAttributes().getNamedItem("param") != null){
+                        Object key = nodeList.item(i).getAttributes().getNamedItem("param").getNodeValue();
+                        Object value =  nodeList.item(i).getTextContent();
+                        paramValues.put(key, value);
+                    //}
                 }
                 
        } catch (ParserConfigurationException ex) {
@@ -400,6 +442,7 @@ Boolean isSubClass = false;
  }
 
  private String getDefaultValue(String name) throws SAXException, IOException{
+     //TODO: Rewrite this function to use the RequestMaps already populated earlier: VariablesMap, ParametersMap
      Document doc = null;
    
      try {
@@ -657,7 +700,7 @@ Boolean isSubClass = false;
             try {
                ByteArrayOutputStream out = new ByteArrayOutputStream();
                pcgmCodeModel.build(new SingleStreamCodeWriter(out));
-               System.out.println("GENERATED CODE:  " + out.toString());
+               //System.out.println("GENERATED CODE:  " + out.toString());
                String fileName = "pcgmHelper"+firstClass.name();
 
                 OutputStream f2 = new FileOutputStream(fileName+".java");
@@ -798,7 +841,7 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                 for (JFieldVar field : implClass.fields().values()){
                     String ftn = field.type().name();
                     if (ftn.contains("CE"))
-                        System.out.println("this is ce: " + ftn);
+                        //System.out.println("this is ce: " + ftn);
                     //System.out.println("field.name: "+field.name()+", field.type.name: "+ ftn+ ", field.class.name: "+ field.getClass().getName());
                     //for(JAnnotationUse annotat : field.annotations()){
                     //    System.out.println("field.annotation: "+ annotat.);
