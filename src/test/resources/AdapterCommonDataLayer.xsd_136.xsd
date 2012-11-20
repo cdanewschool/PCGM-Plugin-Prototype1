@@ -41,9 +41,8 @@ This document was rendered into XML using software provided to HL7 by Beeler Con
 			<xs:element name="acceptAckCode" type="CS" />
 			<!--<xs:element name="sequenceNumber" type="INT" minOccurs="0" />
 			<xs:element name="attachmentText" type="ED_explicit" minOccurs="0" maxOccurs="unbounded" />-->
-			<xs:element name="receiver" type="MCCI_MT000100UV01.Receiver"/>
-                        <!--//removed from receiver//maxOccurs="unbounded"-->
-			<!--<xs:element name="respondTo" type="MCCI_MT000100UV01.RespondTo" nillable="true" minOccurs="0" maxOccurs="unbounded" />-->
+			<xs:element name="receiver" type="MCCI_MT000100UV01.Receiver" maxOccurs="unbounded"/>
+                       	<!--<xs:element name="respondTo" type="MCCI_MT000100UV01.RespondTo" nillable="true" minOccurs="0" maxOccurs="unbounded" />-->
 			<xs:element name="sender" type="MCCI_MT000100UV01.Sender" />
 			<!--<xs:element name="attentionLine" type="MCCI_MT000100UV01.AttentionLine" nillable="true" minOccurs="0" maxOccurs="unbounded" />-->
 			<xs:element name="controlActProcess" type="QUPC_IN043100UV01.QUQI_MT020001UV01.ControlActProcess" />
@@ -67,7 +66,7 @@ This document was rendered into XML using software provided to HL7 by Beeler Con
 			<xs:element name="dataEnterer" type="QUQI_MT020001UV01.DataEnterer" nillable="true" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="informationRecipient" type="QUQI_MT020001UV01.InformationRecipient" nillable="true" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="reasonOf" type="QUQI_MT020001UV01.Reason" nillable="true" minOccurs="0" maxOccurs="unbounded" /> -->
-			<xs:element name="queryByParameter" type="QUPC_IN043100UV01.QUQI_MT020001UV01.QueryByParameter" nillable="true"/>
+			<xs:element name="queryByParameter" type="QUPC_IN043100UV01.QUQI_MT020001UV01.QueryByParameter" nillable="true" minOccurs="0"/>
                         <!--//REMOVED FROM queryByParameter ABOVE//nillable="true" minOccurs="0"  -->
                 </xs:sequence>
 		<xs:attributeGroup ref="InfrastructureRootAttributes" />
@@ -86,7 +85,7 @@ This document was rendered into XML using software provided to HL7 by Beeler Con
 			<!--<xs:element name="initialQuantity" type="INT" minOccurs="0" />
 			<xs:element name="initialQuantityCode" type="CE" minOccurs="0" />
 			<xs:element name="executionAndDeliveryTime" type="TS_explicit" minOccurs="0" />-->
-			<xs:element name="parameterList" type="QUPC_MT040300UV01.ParameterList" />
+			<xs:element name="parameterList" type="QUPC_MT040300UV01.ParameterList" nillable="true" maxOccurs="unbounded"  />
                         <!--//REMOVED FROM parameterList ABOVE//nillable="true" maxOccurs="unbounded"  -->
 			<!--<xs:element name="sortControl" type="QUQI_MT020001UV01.SortControl" nillable="true" minOccurs="0" maxOccurs="unbounded" /> -->
 		</xs:sequence>

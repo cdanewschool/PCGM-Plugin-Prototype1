@@ -120,7 +120,8 @@ Map VariablesMap = new LinkedHashMap();
             JCodeModel pcgmCodeModel = new JCodeModel();          
             //Create One Class that handles the generation of all Request Types
             JDefinedClass pcgmClass = pcgmCodeModel._class("edu.newschool.piim.generatedCode.pcgmHelperRequests");
-            pcgmClass.field(JMod.PROTECTED | JMod.STATIC, outline.getCodeModel()._getClass("org.hl7.v3.ObjectFactory"), "factory");
+            JFieldVar ofField = pcgmClass.field(JMod.PROTECTED | JMod.STATIC, outline.getCodeModel()._getClass("org.hl7.v3.ObjectFactory"), "factory");
+            ofField.init(JExpr._new(outline.getCodeModel()._getClass("org.hl7.v3.ObjectFactory")));              
             //Create a Function, within the Request Class, for each Request Type 
             for (ClassOutline classOutline : outline.getClasses()) {
                 JDefinedClass implClass = classOutline.implClass;
