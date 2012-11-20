@@ -76,14 +76,15 @@ Map VariablesMap = new LinkedHashMap();
 
 //TODO: g- test this with more than one request and response type in the xml schema
 //TODO: g- look into why there are duplicate java files in the 'generated' folder, this does not occur at actual CAL wsimport time
-//TODO: g- generate java docs
+//TODO: g- generate java docs - DONE for request parameter enum type
 //TODO: g- do any design patterns apply well? explore, re-write code
 //TODO: g- analyze other operations for config file, consider Green CDA
 //TODO: g- write output to .java files -DONE
-//TODO: g- where to write the .java files, what is the path?
+//TODO: g- where to write the .java files, what is the path? dynamic path setting
 //TODO: g- figure out packaging, not use static file location for source
 //TODO: g- code optimization, don't loop through the entire outline every time if possible
-//TODO: g- code optimization, only check do checks on hl7 objects not others like string
+//TODO: g- code optimization, only check do checks on hl7 objects not others like string - DONE
+//TODO: g- generate unique message ids/timestamps, use date util?
     private String request;
    
     @Override
@@ -116,30 +117,32 @@ Map VariablesMap = new LinkedHashMap();
 
  private void createRequestClass(Outline outline) throws SAXException, IOException {
       try {
-            JCodeModel pcgmCodeModel = new JCodeModel();
-            pcgmCodeModel.rootPackage();
+            JCodeModel pcgmCodeModel = new JCodeModel();          
             //Create One Class that handles the generation of all Request Types
             JDefinedClass pcgmClass = pcgmCodeModel._class("edu.newschool.piim.generatedCode.pcgmHelperRequests");
+            pcgmClass.field(JMod.PROTECTED | JMod.STATIC, outline.getCodeModel()._getClass("org.hl7.v3.ObjectFactory"), "factory");
             //Create a Function, within the Request Class, for each Request Type 
             for (ClassOutline classOutline : outline.getClasses()) {
-                JDefinedClass implClass = classOutline.implClass; 
+                JDefinedClass implClass = classOutline.implClass;
                 if (implClass.name().contains("Request") && !implClass.fullName().contains("generated")){
-                    String requestType = implClass.name();
-                    request = requestType;
+                    request = implClass.name();
+                    //codemodel creates methods
                     JMethod pcgmMethod = pcgmClass.method(JMod.PUBLIC, implClass, "createRequest_pcgm");
+                    //get the parameters and variables from the configuration file
                     getRequestMap("Variables");
                     getRequestMap("Parameters");
+                    //for each parameter in the config file... 
                     for (Iterator it=ParametersMap.keySet().iterator(); it.hasNext(); ) {
                             Object key = it.next();
                             Object value = ParametersMap.get(key); 
-                            //System.out.println("RequestMap KEY: " + key + ", VALUE: "+ value);
-                            Class<String> type = String.class;
-                            pcgmMethod.param(type, value.toString());
-                           
-                            Map paramValues;
-                            paramValues = getValueArray(key.toString());
+                            //add it to the signiture of the request function
+                            pcgmMethod.param(String.class, value.toString());
+                            //get the parameter values for this parameter
+                            Map paramValues = getValueArray(key.toString());
+                            //if there is more than one parameter with this name then create an enum for the paramType 
                             if (paramValues.size()>1){
                                 JDefinedClass jec = pcgmClass._enum(JMod.PUBLIC, value.toString()+"s");
+                                //add javadocs to the method to display vaild parameter types to user
                                 String javaDocString = value.toString() + " may have values: "; 
                                 pcgmMethod.javadoc().append(javaDocString);
                                  for (Iterator pvit=paramValues.keySet().iterator(); pvit.hasNext(); ) {
@@ -149,12 +152,11 @@ Map VariablesMap = new LinkedHashMap();
                                     pcgmMethod.javadoc().append(pvvalue);
                                  }
                                 
-                            }
-                            
+                            }  
                     }
               
                     JBlock pcgmBlock = pcgmMethod.body();
-                    createRequestMethodBody(outline, requestType, pcgmBlock, "RqstMsg");
+                    createRequestMethodBody(outline, request, pcgmBlock, "RqstMsg");
                     pcgmBlock._return(JExpr.ref("RqstMsg"));
                     pcgmMethod.name("createRequest" + request);
                 }       
@@ -164,11 +166,9 @@ Map VariablesMap = new LinkedHashMap();
                ByteArrayOutputStream out = new ByteArrayOutputStream();
                pcgmCodeModel.build(new SingleStreamCodeWriter(out));
                //System.out.println(out.toString());
-               
                String fileName = "pcgmHelperRequests";
-
-                OutputStream f2 = new FileOutputStream(fileName+".java");
-                out.writeTo(f2);
+               OutputStream f2 = new FileOutputStream(fileName+".java");
+               out.writeTo(f2);
 
             } catch (IOException ex) {
                 Logger.getLogger(MyPluginClass.class.getName()).log(Level.SEVERE, null, ex);
@@ -249,6 +249,9 @@ Map VariablesMap = new LinkedHashMap();
                        if (isListType(field.type().name())){
                            pcgmBlock.directStatement(varName+".get" +fieldNameUpper+ "().add(" +concatVariableName+");");
                        }
+                       else if(isJAXBType(field.type().name())){
+                           pcgmBlock.directStatement(varName+".set"+fieldNameUpper+"(factory.create"+nextType+fieldNameUpper+"("+concatVariableName+"));");
+                       }
                        else{
                        pcgmBlock.directStatement(varName+".set" +fieldNameUpper+ "(" +concatVariableName+");");
                         //JInvocation ji = lhs.invoke("set" +fieldNameUpper);
@@ -299,7 +302,15 @@ Map VariablesMap = new LinkedHashMap();
           isList = true;
           return true;
       }
-        return false;
+      return false;
+ }
+ private boolean isJAXBType(String ftn){
+     if (ftn.contains("JAXBElement")){
+         isJAXB = true;
+        
+         return true;        
+     }
+     return false;
  }
  private String shortFieldType(String ftn){
       isList = false;

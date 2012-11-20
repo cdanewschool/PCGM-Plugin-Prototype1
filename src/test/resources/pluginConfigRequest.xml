@@ -37,12 +37,12 @@
 			<RqstMsg_query_sender_typeCode>CommunicationFunctionType.SND</RqstMsg_query_sender_typeCode>
 			<RqstMsg_query_sender_device_id_extension>"1.1"</RqstMsg_query_sender_device_id_extension>
 			<RqstMsg_query_sender_device_classCode>EntityClassDevice.DEV</RqstMsg_query_sender_device_classCode>
-			<RqstMsg_query_sender_device_determinerCode>"INSTANCE"</RqstMsg_query_sender_device_determinerCode>
-			<RqstMsg_query_controlActProcess_code_code>"QUPC_TE043100UV"</RqstMsg_query_controlActProcess_code_code>
-			<RqstMsg_query_controlActProcess_priorityCode_code>"R"</RqstMsg_query_controlActProcess_priorityCode_code>
+			<RqstMsg_query_sender_device_determinerCode>"INSTANCE"</RqstMsg_query_sender_device_determinerCode>	
 			<RqstMsg_query_controlActProcess_classCode>ActClassControlAct.CACT</RqstMsg_query_controlActProcess_classCode>
 			<RqstMsg_query_controlActProcess_moodCode>XActMoodIntentEvent.EVN</RqstMsg_query_controlActProcess_moodCode>
-			<RqstMsg_query_controlActProcess_queryByParameter_queryId_extension>"0"</RqstMsg_query_controlActProcess_queryByParameter_queryId_extension>
+			<RqstMsg_query_controlActProcess_code_code>"QUPC_TE043100UV"</RqstMsg_query_controlActProcess_code_code>
+			<RqstMsg_query_controlActProcess_priorityCode_code>"R"</RqstMsg_query_controlActProcess_priorityCode_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_queryId_extension>"TODO"</RqstMsg_query_controlActProcess_queryByParameter_queryId_extension>
 			<RqstMsg_query_controlActProcess_queryByParameter_statusCode_code>"new"</RqstMsg_query_controlActProcess_queryByParameter_statusCode_code>
 			<RqstMsg_query_controlActProcess_queryByParameter_responseModalityCode_code>"R"</RqstMsg_query_controlActProcess_queryByParameter_responseModalityCode_code>
 			<RqstMsg_query_controlActProcess_queryByParameter_responsePriorityCode_code>"I"</RqstMsg_query_controlActProcess_queryByParameter_responsePriorityCode_code>		
@@ -55,15 +55,33 @@
 			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_patientIdentifier_value_extension name="patientId" param="patientId">"0"</RqstMsg_query_controlActProcess_queryByParameter_parameterList_patientIdentifier_value_extension>
 		</Parameters>
 		<Variables>
-			<RqstMsg_localDeviceId>1.1</RqstMsg_localDeviceId>
-			<RqstMsg_senderOID>1.1</RqstMsg_senderOID>
-			<RqstMsg_receiverOID>1.1</RqstMsg_receiverOID>
-			<RqstMsg_query_interactionId_root>2.16.840.1.113883.5</RqstMsg_query_interactionId_root>
-			<RqstMsg_query_interactionId_extension>PRPA_IN201307UV02</RqstMsg_query_interactionId_extension>
-			<RqstMsg_query_interactionId_assigningAuthorityName>HL7</RqstMsg_query_interactionId_assigningAuthorityName>
-			<RqstMsg_query_processingCode_code>P</RqstMsg_query_processingCode_code>
-			<RqstMsg_query_processingModeCode_code>R</RqstMsg_query_processingModeCode_code>
-			<RqstMsg_query_acceptAckCode_code>AL</RqstMsg_query_acceptAckCode_code>			
+			<RqstMsg_localDeviceId>"1.1"</RqstMsg_localDeviceId>
+			<RqstMsg_senderOID>"1.1"</RqstMsg_senderOID>
+			<RqstMsg_receiverOID>"1.1"</RqstMsg_receiverOID>
+			<RqstMsg_query_id_extension>"20121113121110.005"</RqstMsg_query_id_extension>
+			<RqstMsg_query_creationTime_value>"20121113121110.005"</RqstMsg_query_creationTime_value>
+			<RqstMsg_query_interactionId_root>"2.16.840.1.113883.5"</RqstMsg_query_interactionId_root>
+			<RqstMsg_query_interactionId_extension>"PRPA_IN201307UV02"</RqstMsg_query_interactionId_extension>
+			<RqstMsg_query_interactionId_assigningAuthorityName>"HL7"</RqstMsg_query_interactionId_assigningAuthorityName>
+			<RqstMsg_query_processingCode_code>"P"</RqstMsg_query_processingCode_code>
+			<RqstMsg_query_processingModeCode_code>"R"</RqstMsg_query_processingModeCode_code>
+			<RqstMsg_query_acceptAckCode_code>"AL"</RqstMsg_query_acceptAckCode_code>						
+			<RqstMsg_query_receiver_typeCode>CommunicationFunctionType.RCV</RqstMsg_query_receiver_typeCode>
+			<RqstMsg_query_receiver_device_id_extension>"Common Data Layer Service"</RqstMsg_query_receiver_device_id_extension>
+			<RqstMsg_query_receiver_device_classCode>EntityClassDevice.DEV</RqstMsg_query_receiver_device_classCode>
+			<RqstMsg_query_receiver_device_determinerCode>"INSTANCE"</RqstMsg_query_receiver_device_determinerCode>			
+			<RqstMsg_query_sender_typeCode>CommunicationFunctionType.SND</RqstMsg_query_sender_typeCode>
+			<RqstMsg_query_sender_device_id_extension>"Adapter Assembly Service"</RqstMsg_query_sender_device_id_extension>
+			<RqstMsg_query_sender_device_classCode>EntityClassDevice.DEV</RqstMsg_query_sender_device_classCode>
+			<RqstMsg_query_sender_device_determinerCode>"INSTANCE"</RqstMsg_query_sender_device_determinerCode>			
+			<RqstMsg_query_controlActProcess_classCode>ActClassControlAct.CACT</RqstMsg_query_controlActProcess_classCode>
+			<RqstMsg_query_controlActProcess_moodCode>XActMoodIntentEvent.EVN</RqstMsg_query_controlActProcess_moodCode>
+			<RqstMsg_query_controlActProcess_code_code>"PRPA_TE201307UV02"</RqstMsg_query_controlActProcess_code_code>
+			<RqstMsg_query_controlActProcess_priorityCode_code>"R"</RqstMsg_query_controlActProcess_priorityCode_code>			
+			<RqstMsg_query_controlActProcess_queryByParameter_queryId_extension>"TODO"</RqstMsg_query_controlActProcess_queryByParameter_queryId_extension>
+			<RqstMsg_query_controlActProcess_queryByParameter_statusCode_code>"new"</RqstMsg_query_controlActProcess_queryByParameter_statusCode_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_responseModalityCode_code>"R"</RqstMsg_query_controlActProcess_queryByParameter_responseModalityCode_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_responsePriorityCode_code>"I"</RqstMsg_query_controlActProcess_queryByParameter_responsePriorityCode_code>		
 		</Variables>
 	</PatientDemographicsPRPAIN201307UV02RequestType>
 </pluginConfigRequest>
