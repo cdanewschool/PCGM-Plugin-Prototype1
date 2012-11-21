@@ -116,20 +116,29 @@ Map VariablesMap = new LinkedHashMap();
 
            return true;
     }
-
+ private void createTimeStampMethod(JDefinedClass pcgmClass){
+      JFieldVar dateFormatField = pcgmClass.field(JMod.PRIVATE, DateFormat.class, "dateFormat", JExpr._null());
+      JFieldVar dateSimpleFormatField = pcgmClass.field(JMod.PRIVATE, SimpleDateFormat.class, "dateSimpleFormat", JExpr._null());
+      JFieldVar dateField = pcgmClass.field(JMod.PRIVATE, Date.class, "date", JExpr._null());
+      JMethod timeStampMethod = pcgmClass.method(JMod.PRIVATE, String.class, "getTimeStamp");
+      timeStampMethod.body().assign(dateFormatField, JExpr.direct("new SimpleDateFormat(\"yyyyMMddHHmmssZ\")"));
+      timeStampMethod.body()._return(JExpr.direct("dateFormat.format(new Date()).toString()"));
+ }
  private void createRequestClass(Outline outline) throws SAXException, IOException {
       try {
             JCodeModel pcgmCodeModel = new JCodeModel();          
             //Create One Class that handles the generation of all Request Types
             JDefinedClass pcgmClass = pcgmCodeModel._class("edu.newschool.piim.generatedCode.pcgmHelperRequests");
+            //Add ObjectFactory field
             JFieldVar ofField = pcgmClass.field(JMod.PROTECTED | JMod.STATIC, outline.getCodeModel()._getClass("org.hl7.v3.ObjectFactory"), "factory");
+            ofField.init(JExpr._new(outline.getCodeModel()._getClass("org.hl7.v3.ObjectFactory")));
+            //Add uid field
             JFieldVar uidField = pcgmClass.field(JMod.NONE, String.class, "uid", JExpr._null());
-            //not used only for getting the import UUID to generate.
+            //not used only for getting the 'import java.util.UUID' to generate.
             JFieldVar uuidField = pcgmClass.field(JMod.NONE, UUID.class, "uid2", JExpr._null());
-            JFieldVar dateFormatField = pcgmClass.field(JMod.PRIVATE, DateFormat.class, "dateFormat", JExpr._null());
-            JFieldVar dateSimpleFormatField = pcgmClass.field(JMod.PRIVATE, SimpleDateFormat.class, "dateSimpleFormat", JExpr._null());
-            JFieldVar dateField = pcgmClass.field(JMod.PRIVATE, Date.class, "date", JExpr._null());
-            ofField.init(JExpr._new(outline.getCodeModel()._getClass("org.hl7.v3.ObjectFactory")));              
+            //Careate a method to get the current time stamp
+            createTimeStampMethod(pcgmClass); 
+            
             //Create a Function, within the Request Class, for each Request Type 
             for (ClassOutline classOutline : outline.getClasses()) {
                 JDefinedClass implClass = classOutline.implClass;
@@ -161,17 +170,9 @@ Map VariablesMap = new LinkedHashMap();
                                     String pvvalue = paramValues.get(pvkey).toString();
                                     jec.enumConstant(pvvalue);
                                     pcgmMethod.javadoc().append(pvvalue);
-                                 }
-                                
+                                 }                               
                             }  
-                    }
-                    
-                    //add the date util function
-                    JMethod timeStampMethod = pcgmClass.method(JMod.PRIVATE, String.class, "getTimeStamp");
-                    //JBlock timeStampBlock = timeStampMethod.body();
-                    //initialize the uid;
-                    timeStampMethod.body().assign(dateFormatField, JExpr.direct("SimpleDateFormat(\"yyyyMMddHHmmssZ\")"));
-                                       
+                    }                
                     JBlock pcgmBlock = pcgmMethod.body();
                     createRequestMethodBody(outline, request, pcgmBlock, "RqstMsg");
                     pcgmBlock._return(JExpr.ref("RqstMsg"));
@@ -267,20 +268,10 @@ Map VariablesMap = new LinkedHashMap();
                            pcgmBlock.directStatement(varName+".get" +fieldNameUpper+ "().add(" +concatVariableName+");");
                        }
                        else if(isJAXBType(field.type().name())){
-                           String ff;
-                           try {
-                               ff = field.getClass().getDeclaredField("owner").getName();
-                           } catch (NoSuchFieldException ex) {
-                               Logger.getLogger(MyPluginClass.class.getName()).log(Level.SEVERE, null, ex);
-                           } catch (SecurityException ex) {
-                               Logger.getLogger(MyPluginClass.class.getName()).log(Level.SEVERE, null, ex);
-                           }
                            pcgmBlock.directStatement(varName+".set"+fieldNameUpper+"(factory.create"+nextType+fieldNameUpper+"("+concatVariableName+"));");
                        }
                        else{
-                       pcgmBlock.directStatement(varName+".set" +fieldNameUpper+ "(" +concatVariableName+");");
-                        //JInvocation ji = lhs.invoke("set" +fieldNameUpper);
-                        //ji.arg(concatVariableName); 
+                       pcgmBlock.directStatement(varName+".set" +fieldNameUpper+ "(" +concatVariableName+");");                       
                        }
                        
                    }  
