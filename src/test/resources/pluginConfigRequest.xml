@@ -22,7 +22,7 @@
 			<RqstMsg_localDeviceId>"1.1"</RqstMsg_localDeviceId>
 			<RqstMsg_senderOID>"1.1"</RqstMsg_senderOID>
 			<RqstMsg_receiverOID>"1.1"</RqstMsg_receiverOID>
-			<RqstMsg_query_id_extension>"20121113121110.005"</RqstMsg_query_id_extension>
+			<RqstMsg_query_id_extension>uid</RqstMsg_query_id_extension>
 			<RqstMsg_query_creationTime_value>"20121113121110.005"</RqstMsg_query_creationTime_value>
 			<RqstMsg_query_interactionId_root>"2.16.840.1.113883.5"</RqstMsg_query_interactionId_root>
 			<RqstMsg_query_interactionId_extension>"QUPC_IN043100UV"</RqstMsg_query_interactionId_extension>
@@ -58,7 +58,7 @@
 			<RqstMsg_localDeviceId>"1.1"</RqstMsg_localDeviceId>
 			<RqstMsg_senderOID>"1.1"</RqstMsg_senderOID>
 			<RqstMsg_receiverOID>"1.1"</RqstMsg_receiverOID>
-			<RqstMsg_query_id_extension>"20121113121110.005"</RqstMsg_query_id_extension>
+			<RqstMsg_query_id_extension>uid</RqstMsg_query_id_extension>
 			<RqstMsg_query_creationTime_value>"20121113121110.005"</RqstMsg_query_creationTime_value>
 			<RqstMsg_query_interactionId_root>"2.16.840.1.113883.5"</RqstMsg_query_interactionId_root>
 			<RqstMsg_query_interactionId_extension>"PRPA_IN201307UV02"</RqstMsg_query_interactionId_extension>
