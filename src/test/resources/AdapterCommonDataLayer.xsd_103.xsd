@@ -232,4 +232,18 @@ Placeholder for element referencing stub: ControlActProcess
       <xs:attributeGroup ref="InfrastructureRootAttributes" />
       <xs:attribute name="nullFlavor" type="NullFlavor" use="optional" />
    </xs:complexType>-->
+   <xs:complexType name="MFMI_MT700712UV01.QueryAck">
+		<xs:sequence>
+			<xs:group ref="InfrastructureRootElements" />
+			<xs:element name="queryId" type="II" minOccurs="0" />
+			<xs:element name="statusCode" type="CS" minOccurs="0" />
+			<xs:element name="queryResponseCode" type="CS" />
+			<xs:element name="resultTotalQuantity" type="INT" minOccurs="0" />
+			<xs:element name="resultCurrentQuantity" type="INT" minOccurs="0" />
+			<xs:element name="resultRemainingQuantity" type="INT" minOccurs="0" />
+		</xs:sequence>
+		<xs:attributeGroup ref="InfrastructureRootAttributes" />
+		<xs:attribute name="nullFlavor" type="NullFlavor" use="optional" />
+   </xs:complexType>
+   
 </xs:schema>

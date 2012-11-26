@@ -721,23 +721,23 @@ Map VariablesMap = new LinkedHashMap();
                     firstClass = implClass;
                     //call the function that generates the methods in the class created above
                     generateResponseMethod(outline, implClass.name(), pcgmClass, pcgmCodeModel, "result");
+                
+            
+
+                    try {
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        pcgmCodeModel.build(new SingleStreamCodeWriter(out));
+                        //System.out.println("GENERATED CODE:  " + out.toString());
+                        String fileName = "pcgmHelper"+firstClass.name();
+
+                        OutputStream f2 = new FileOutputStream(fileName+".java");
+                        out.writeTo(f2);
+
+                    } catch (IOException ex) {
+                        Logger.getLogger(MyPluginClass.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
-
-            try {
-               ByteArrayOutputStream out = new ByteArrayOutputStream();
-               pcgmCodeModel.build(new SingleStreamCodeWriter(out));
-               //System.out.println("GENERATED CODE:  " + out.toString());
-               String fileName = "pcgmHelper"+firstClass.name();
-
-                OutputStream f2 = new FileOutputStream(fileName+".java");
-                out.writeTo(f2);
-
-             } catch (IOException ex) {
-                Logger.getLogger(MyPluginClass.class.getName()).log(Level.SEVERE, null, ex);
-             }
-
-
         } catch (JClassAlreadyExistsException ex) {
             Logger.getLogger(MyPluginClass.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -867,7 +867,7 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                 //Loop through all the fields in this class
                 for (JFieldVar field : implClass.fields().values()){
                     String ftn = field.type().name();
-                    if (ftn.contains("CE"))
+                    //if (ftn.contains("CE"))
                         //System.out.println("this is ce: " + ftn);
                     //System.out.println("field.name: "+field.name()+", field.type.name: "+ ftn+ ", field.class.name: "+ field.getClass().getName());
                     //for(JAnnotationUse annotat : field.annotations()){
@@ -879,8 +879,9 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                     isListS = false; //identify if this field is a Serializable list. List<Serializable> => .getContent()
                     isSubClass = false; //identify class that inherit from other classes
                     if (ftn.contains("List<")){
-                        if (ftn.contains("List<Serializable>"))
+                        if (ftn.contains("List<Serializable>")) {
                             isListS = true;
+                        }
                         int size = ftn.length()-1;
                         ftn = ftn.substring(5, size);
                         isList = true;

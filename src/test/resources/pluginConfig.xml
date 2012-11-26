@@ -10,16 +10,11 @@
 		<functionPublic name="patientLastName" vparent="name" thl7="EnExplicitFamily" 	tparent="PNExplicit" trtype="String"/>
 		<functionPublic name="patientFirstName" vparent="name" thl7="EnExplicitGiven" tparent="PNExplicit" trtype="String"/>
 		<functionPublic name="patientGender" vparent="administrativeGenderCode" thl7="ANY" tparent="CE" trtype="Code"/>
-		<function fmod="Private" name="PRPAMT201303UV02Patient"/>
-		<function fmod="Private" name="II" vparent="subject" />
-		<function fmod="Private" name="PRPAMT201303UV02Person" vparent="subject" />
-		<function fmod="Private" name="PNExplicit" vparent="patientPerson" tparent="PRPAMT201303UV02Person"/>
-		<function fmod="Private" name="CE" nname="administrativeGenderCode" vparent="patientPerson" tparent="PRPAMT201303UV02Person"/>
-		<function fmod="Private" name="TSExplicit" nname="birthTime" vparent="patientPerson" tparent="PRPAMT201303UV02Person"/>
-		<function fmod="Public" name="patientLastName" vparent="name" thl7="EnExplicitFamily" 	tparent="PNExplicit" trtype="String"/>
-		<function fmod="Public" name="patientFirstName" vparent="name" thl7="EnExplicitGiven" tparent="PNExplicit" trtype="String"/>
-		<function fmod="Public" name="patientGender" vparent="administrativeGenderCode" thl7="none" tparent="CE" trtype="String"/>
-		<!--<functionPublic name="patientGender" vparent="administrativeGenderCode" thl7="none" tparent="CE" trtype="String"/>
-		<functionPublic name="patientBirthTime" vparent="birthTime" thl7="" tparent="TSExplicit" trtype="String"/>-->
+	</Operation>
+	<Operation name="CareRecordQUPCIN043200UV01ResponseType">
+		<functionPrivate name="QUPCIN043200UV01MCCIMT000300UV01Message"/>
+		<functionPrivate name="QUPCIN043200UV01MFMIMT700712UV01ControlActProcess" vparent="response" />
+		<functionPrivate name="QUPCIN043200UV01MFMIMT700712UV01Subject1" vparent="ControlActProcess" />
+		<functionPrivate name="QUPCIN043200UV01MFMIMT700712UV01RegistrationEvent" vparent="subject" />	
 	</Operation>
 </pluginConfig>
