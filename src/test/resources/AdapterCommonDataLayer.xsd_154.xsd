@@ -64,11 +64,11 @@
 			<xsd:element name="query" type="hl7:QUPC_IN043100UV01.MCCI_MT000100UV01.Message" />
 		</xsd:sequence>
 	</xsd:complexType>
-       <xsd:complexType name="CareRecord_QUPC_IN043200UV01ResponseType">
+      <!-- <xsd:complexType name="CareRecord_QUPC_IN043200UV01ResponseType">
 		<xsd:sequence>
 			<xsd:element name="careRecord" type="hl7:QUPC_IN043200UV01.MFMI_MT700712UV01.Subject1"/>
 		</xsd:sequence>
-	</xsd:complexType>
+	</xsd:complexType>-->
 
 	<xsd:complexType name="CareRecord_QUPC_IN043200UV01MessageType">
 		<xsd:sequence>
@@ -89,12 +89,12 @@
 			 <xsd:element name="subject" type="hl7:PRPA_MT201303UV02.Patient" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-	<xsd:complexType name="PatientDemographics_PRPA_IN201308UVMessageType">
+	<!--<xsd:complexType name="PatientDemographics_PRPA_IN201308UVMessageType">
 		<xsd:sequence>
 			<xsd:element ref="hl7:PRPA_IN201308UV02" />
 		</xsd:sequence>
 	</xsd:complexType>
-	<!--
+	
         <xsd:complexType name="ProviderDetails_PRPM_IN306010UV1RequestType">
 		<xsd:sequence>
 			<xsd:element name="localDeviceId" type="xsd:string" />
@@ -227,9 +227,9 @@
 	-->
         <!-- responses -->
       
-        <xsd:element name="PatientDemographics_PRPA_MT201303UVMessage" type="hl7:PatientDemographics_PRPA_IN201308UVMessageType" />
+       <!--<xsd:element name="PatientDemographics_PRPA_MT201303UVMessage" type="hl7:PatientDemographics_PRPA_IN201308UVMessageType" />-->
         <xsd:element name="PatientDemographics_PRPA_MT201303UVResponse" type="hl7:PatientDemographics_PRPA_MT201303UVResponseType" />
-        <xsd:element name="CareRecord_QUPC_IN043200UV01Response" type="hl7:CareRecord_QUPC_IN043200UV01ResponseType"/>
+        <!--<xsd:element name="CareRecord_QUPC_IN043200UV01Response" type="hl7:CareRecord_QUPC_IN043200UV01ResponseType"/>-->
         <xsd:element name="CareRecord_QUPC_IN043200UV01Message" type="hl7:CareRecord_QUPC_IN043200UV01MessageType" />
 	
         <!--

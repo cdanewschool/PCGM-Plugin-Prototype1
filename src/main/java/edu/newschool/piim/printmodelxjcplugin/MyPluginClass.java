@@ -91,6 +91,7 @@ Map VariablesMap = new LinkedHashMap();
 //TODO: g- generate unique message ids/timestamps, use date util?
     private String request;
     private Document docResponse;
+    private boolean isChildFunctionPublic;
    
    
     @Override
@@ -530,38 +531,6 @@ Map VariablesMap = new LinkedHashMap();
         
        return "null";
 }
-// <editor-fold>
- /*
- private void getWSDL() throws SAXException, IOException{
-        Document doc = null;
-        try {
-           // WSDLDocument wsdldoc;
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
-            DocumentBuilder builder;
-            builder = factory.newDocumentBuilder();
-            doc = builder.parse("src/test/resources/AdapterCommonDataLayer.wsdl");
-            Element del = doc.getDocumentElement();
-            System.out.println("docElement del.getTagName: " + del.getTagName());
-            NodeList allChildNodes = doc.getChildNodes();
-            NodeList nodeList = doc.getElementsByTagName("wsdl:message");
-            System.out.println("first message item node name " + nodeList.item(0).getNodeName());
-            System.out.println("first message item node first child node name " + nodeList.item(0).getFirstChild().getPrefix());
-            //System.out.println("first message item node child attribute node name " + nodeList.item(0).getChildNodes().item(0).getAttributes().item(0).getNodeName());
-           // System.out.println("first message item node child attribute node value " + nodeList.item(0).getChildNodes().item(0).getAttributes().item(0).getNodeValue());
-
-            System.out.println("first message item attribute node name " + nodeList.item(0).getAttributes().item(0).getNodeName());
-            System.out.println("first message item attribute node value " + nodeList.item(0).getAttributes().item(0).getNodeValue());
-            System.out.println("first message item node parent name " + nodeList.item(0).getParentNode().getNodeName());
-
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(MyPluginClass.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        // return (WSDLDocument) doc;
- }
-  
-*/
-// </editor-fold>
 
  private void privateFunction(String findType) throws SAXException, IOException{
         Document doc;
@@ -744,7 +713,10 @@ Map VariablesMap = new LinkedHashMap();
                         else if(type.matches("private")){
                              privateFunctionsMap.put(key, value);
                         }
-                    }                  
+                    }
+                    else{
+                         privateFunctionsMap.put(key, value);
+                    }
                     if (nodeList2.item(i).getChildNodes().getLength()>0){   
                          for(int j=0; j<(nodeList2.item(i).getChildNodes().getLength()); j++){
                             if (nodeList2.item(i).getChildNodes().item(j).getNodeName().contains("text")){
@@ -768,6 +740,7 @@ Map VariablesMap = new LinkedHashMap();
      return false;
  
  }
+ 
  private boolean isPublic(String value){
        if(publicFunctionsMap2.containsKey(value))
        {
@@ -784,15 +757,28 @@ Map VariablesMap = new LinkedHashMap();
      return null;
  }
  private String getParentNodeType(String value){
-     NodeList node = docResponse.getElementsByTagName(value);
-     if(node.item(0).getParentNode().getNodeName() != null){
-        return node.item(0).getParentNode().getNodeName();
-     }
+    NodeList node = docResponse.getElementsByTagName(value);
+     //for(int i=0; i<nodeList2.getLength(); i++){
+       // if(value.matches(nodeList2.item(i).getNodeName())){
+            if(node.item(0).getParentNode().getNodeName() != null){
+                return node.item(0).getParentNode().getNodeName();
+            }
+       // }
+     //}
      return null;
+ }
+ //FIX: isParent uses the getParentNodeType which uses the docResponse. it has the whole tree not just for this request type.
+ private boolean isParent(String value){
+    String parent = getParentNodeType(value);
+    if(parent.matches(prevType)){
+        return true;
+    }
+    return false;
  }
  private void getPublicChildFunctionsMap(String value){
     Object key;
     Object ovalue = null; 
+    isChildFunctionPublic = false;
     publicFunctionsMap.clear();
     NodeList node = docResponse.getElementsByTagName(value);
      for(int i=0; i<node.getLength(); i++){  
@@ -807,20 +793,27 @@ Map VariablesMap = new LinkedHashMap();
                 }
                 key =   node.item(i).getChildNodes().item(j).getAttributes().getNamedItem("name").getNodeValue();
                 ovalue = node.item(i).getChildNodes().item(j).getNodeName();
-                publicFunctionsMap.put(key, ovalue);             
+                publicFunctionsMap.put(key, ovalue);
+                isChildFunctionPublic = true;
               }
      }
      }
  }
+ private String getReturnType(String value){
+     NodeList node = docResponse.getElementsByTagName(value);
+     if(node.item(0).getAttributes().getNamedItem("retrunType") != null){
+        return node.item(0).getAttributes().getNamedItem("retrunType").getNodeValue();
+     }
+     return "none";
+ }
 public void generateResponseClass(Outline outline) throws SAXException, IOException{
       try {
-            
-            for (ClassOutline classOutline : outline.getClasses()) {
+         for (ClassOutline classOutline : outline.getClasses()) {
                 //for each class in the outline that contains the word "Response" create a class and add to pcgmCodeModel
                 //TODO: consider using the wsdl to get the list of responses
                 JCodeModel pcgmCodeModel = new JCodeModel();
                 JDefinedClass implClass = classOutline.implClass;
-                if (implClass.name().contains("Response") && !implClass.fullName().contains("generated")){
+                if ((implClass.name().contains("Response") || implClass.name().contains("MessageType")) && !implClass.fullName().contains("generated")){
                     JDefinedClass pcgmClass = pcgmCodeModel._class("edu.newschool.piim.generatedCode.pcgmHelper"+implClass.name());
                     responseClass = implClass;
                     //call the function that generates the methods in the class created above
@@ -828,7 +821,7 @@ public void generateResponseClass(Outline outline) throws SAXException, IOExcept
                     privateFunctionsMap.clear();
                     publicFunctionsMap2.clear();
                     getResponseMap(implClass.name());
-                    generateResponseMethod(outline, implClass.name(), pcgmClass, pcgmCodeModel, "result");
+                    generateResponseMethod(outline, implClass.name(), pcgmClass, pcgmCodeModel, "result", null);
                 
                   try {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -850,11 +843,11 @@ public void generateResponseClass(Outline outline) throws SAXException, IOExcept
 
  }
  
-public void generateResponseMethod(Outline outline, String nextType, JDefinedClass pcgmClass, JCodeModel pcgmCodeModel, String varName) throws JClassAlreadyExistsException, SAXException, IOException{
+public void generateResponseMethod(Outline outline, String nextType, JDefinedClass pcgmClass, JCodeModel pcgmCodeModel, String varName, JFieldVar theField) throws JClassAlreadyExistsException, SAXException, IOException{
         JMethod pcgmMethod = null;
         String jaxbStmnt = "";
         String classStmnt = "";
-      
+        
         
         for (ClassOutline classOutline : outline.getClasses()) {
            JDefinedClass implClass = classOutline.implClass;
@@ -868,17 +861,28 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                
                String varUp =  String.format( "%s%s", Character.toUpperCase(varName.charAt(0)), varName.substring(1) );
                varUp = "get"+varUp;
-
+              
                //if the method is in the configuration file as privateFunction
-               if (isPrivate(implClass.name())){
+               if (isPrivate(implClass.name()) && isParent(implClass.name())){
+                   
+                   String parentName = getParentNodeName(implClass.name());
                    //create the private method and add the parameter
                    //TODO: make methods static, there is an option for JMod.STATIC question is how to do both private and static??
-                   pcgmMethod = pcgmClass.method(JMod.PRIVATE, implClass, "pcgm_"+varUp);
-                   //TODO: the paramenter type needs to have the full name, ie: org.hl7.v3
+                   JClass jClassavpImpl;
+                   if(getReturnType(implClass.name()).matches("list")){
+                           pcgmMethod = pcgmClass.method(JMod.PRIVATE, theField.type(), "pcgm_"+varUp);
+                           jClassavpImpl = (JClass) theField.type();
+                   }
+                   else{
+                            pcgmMethod = pcgmClass.method(JMod.PRIVATE, implClass, "pcgm_"+varUp);
+                            jClassavpImpl = implClass;
+                   }
+                   //TODO: the paramenter type needs to have the full name, ie: org.hl7.v3 -- not if we use the initiate that will import the needed classes
                    pcgmMethod.varParam(responseClass, "param1");
                    //create the return variable and add it to the method body
                    JBlock pcgmBlock = pcgmMethod.body();
-                   JClass jClassavpImpl = implClass;
+                   
+                  
                    JVar jvar = pcgmBlock.decl(jClassavpImpl, varName);
                    //for the private function we initialize the variable
                    jvar.init(JExpr._new(jClassavpImpl));
@@ -896,17 +900,39 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                     }
                    //if the nextType is/was a list then we need to use the .get(index) method.
                    if (isList) {
-                       directStmnt = directStmnt+".get(0);";
+                       if(getReturnType(implClass.name()).matches("list")){
+                           
+                           
+                       }
+                       else {
+                           directStmnt = directStmnt+".get(0);";
+                       }
+                     
                    }
                    else {
                        directStmnt = directStmnt+";";
                    }
                    pcgmBlock.directStatement(directStmnt);
+                   
+                   
+                   if(getReturnType(getParentNodeType(implClass.name())).matches("list")){
+                           JForLoop forLoop = pcgmBlock._for(); 
+                           JVar i = forLoop.init(pcgmCodeModel.INT, "i", JExpr.lit(0));
+                           JExpression je = JExpr.direct(parentName+".size()");
+                           forLoop.test(JOp.lt(i, je));
+                           forLoop.update(JExpr.assignPlus(i, JExpr.lit(1)));
+                           forLoop.body().directStatement("This is where the good stuff goes!");
+                   }
+                   
                    pcgmBlock._return(jvar);
+                   
+                   
                 }
                
                 //if the method is in the configuration file as publicFunction
+               
                 if (isPublic(implClass.name())){
+                    String parentName = getParentNodeName(implClass.name()); 
                    //create the public method and add the parameter
                    pcgmMethod = pcgmClass.method(JMod.PUBLIC, String.class, varUp);
                    pcgmMethod.varParam(responseClass, "param1");
@@ -917,7 +943,7 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
 
                    //parentNode should never be null so this stmnt will allways get overridden, unless there is an error
                   String directStmnt = "//ERROR-Public function missing parent in config file.";
-                  String parentName = getParentNodeName(implClass.name());
+                  
                    if (parentName != null){
                       String parentUp =  String.format( "%s%s", Character.toUpperCase(parentName.charAt(0)), parentName.substring(1) );
                       parentUp = "pcgm_get"+parentUp;
@@ -964,15 +990,16 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                         isSubClass = true;
                         if(!isListS){
                             
-                            getPublicFunctionsMap(implClass.name());
+                            //getPublicFunctionsMap(implClass.name());
                             getPublicChildFunctionsMap(implClass.name());
-                            if(isFunctionPublic){
+                            if(isChildFunctionPublic){
                                 for (Iterator it=publicFunctionsMap.keySet().iterator(); it.hasNext(); ) {
                                  Object key = it.next();
                                  Object value = publicFunctionsMap.get(key);
-                                 generateResponseMethod(outline, value.toString(), pcgmClass, pcgmCodeModel, key.toString());
+                                 prevType = implClass.name(); 
+                                 generateResponseMethod(outline, value.toString(), pcgmClass, pcgmCodeModel, key.toString(), theField);
                                 }
-                                isFunctionPublic = false;
+                                isChildFunctionPublic = false;
                             }
                         }
                     }
@@ -1009,19 +1036,22 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                     
 
                     if (isListS) {
-                      getPublicFunctionsMap(implClass.name());
-                      if(isFunctionPublic){
+                      //getPublicFunctionsMap(implClass.name());
+                        getPublicChildFunctionsMap(implClass.name());
+                      if(isChildFunctionPublic){
                          for (Iterator it=publicFunctionsMap.keySet().iterator(); it.hasNext(); ) {
                             Object key = it.next();
                             Object value = publicFunctionsMap.get(key);
-                            generateResponseMethod(outline, value.toString(), pcgmClass, pcgmCodeModel, key.toString());
+                            prevType = implClass.name(); 
+                            generateResponseMethod(outline, value.toString(), pcgmClass, pcgmCodeModel, key.toString(), theField);
                          }
-                         isFunctionPublic = false;
+                         isChildFunctionPublic = false;
                       }
                     }
                              
                    if (field.type().fullName().contains("org.hl7.v3")) {
-                      generateResponseMethod(outline, ftn, pcgmClass, pcgmCodeModel, field.name());
+                     prevType = implClass.name();  
+                     generateResponseMethod(outline, ftn, pcgmClass, pcgmCodeModel, field.name(), field);
                       
                     
                    }

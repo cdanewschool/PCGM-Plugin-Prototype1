@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<pluginConfigFile>
+	<CareRecordQUPCIN043100UV01RequestType>
+		<Parameters>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_patientId_value_extension name="patientId" param="patientId">"0"</RqstMsg_query_controlActProcess_queryByParameter_parameterList_patientId_value_extension>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="INTOLIST">Allergies</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="PROBLIST">Problems</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="COBSCAT">Vitals</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="IMMUCAT">Immunizations</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="MEDLIST">MedicationsAll</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="CURMEDLIST">MedicationsOnlyActive</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="DISCHMEDLIST">MedicationsDischarge</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="HISTMEDLIST">MedicationsHistory</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="DICAT">ImagingResults</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="LABCAT">TestResults</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="PSVCCAT">Procedures</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="OE">OrdersAll</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="LABOE">OrdersLabOnly</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code name="careRecordType" param="MEDOE">OrdersMedsOnly</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_code>
+		</Parameters>
+		<Variables>
+			<RqstMsg_localDeviceId>"1.1"</RqstMsg_localDeviceId>
+			<RqstMsg_senderOID>"1.1"</RqstMsg_senderOID>
+			<RqstMsg_receiverOID>"1.1"</RqstMsg_receiverOID>
+			<RqstMsg_query_id_extension>uid</RqstMsg_query_id_extension>
+			<RqstMsg_query_creationTime_value>getTimeStamp()</RqstMsg_query_creationTime_value>
+			<RqstMsg_query_interactionId_root>"2.16.840.1.113883.5"</RqstMsg_query_interactionId_root>
+			<RqstMsg_query_interactionId_extension>"QUPC_IN043100UV"</RqstMsg_query_interactionId_extension>
+			<RqstMsg_query_interactionId_assigningAuthorityName>"HL7"</RqstMsg_query_interactionId_assigningAuthorityName>	
+			<RqstMsg_query_processingCode_code>"R"</RqstMsg_query_processingCode_code>
+			<RqstMsg_query_processingModeCode_code>"T"</RqstMsg_query_processingModeCode_code>
+			<RqstMsg_query_acceptAckCode_code>"AL"</RqstMsg_query_acceptAckCode_code>
+			<RqstMsg_query_receiver_typeCode>CommunicationFunctionType.RCV</RqstMsg_query_receiver_typeCode>
+			<RqstMsg_query_receiver_device_id_extension>"Common Data Layer Service"</RqstMsg_query_receiver_device_id_extension>
+			<RqstMsg_query_receiver_device_classCode>EntityClassDevice.DEV</RqstMsg_query_receiver_device_classCode>
+			<RqstMsg_query_receiver_device_determinerCode>"INSTANCE"</RqstMsg_query_receiver_device_determinerCode>
+			<RqstMsg_query_sender_typeCode>CommunicationFunctionType.SND</RqstMsg_query_sender_typeCode>
+			<RqstMsg_query_sender_device_id_extension>"1.1"</RqstMsg_query_sender_device_id_extension>
+			<RqstMsg_query_sender_device_classCode>EntityClassDevice.DEV</RqstMsg_query_sender_device_classCode>
+			<RqstMsg_query_sender_device_determinerCode>"INSTANCE"</RqstMsg_query_sender_device_determinerCode>	
+			<RqstMsg_query_controlActProcess_classCode>ActClassControlAct.CACT</RqstMsg_query_controlActProcess_classCode>
+			<RqstMsg_query_controlActProcess_moodCode>XActMoodIntentEvent.EVN</RqstMsg_query_controlActProcess_moodCode>
+			<RqstMsg_query_controlActProcess_code_code>"QUPC_TE043100UV"</RqstMsg_query_controlActProcess_code_code>
+			<RqstMsg_query_controlActProcess_priorityCode_code>"R"</RqstMsg_query_controlActProcess_priorityCode_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_queryId_extension>"TODO"</RqstMsg_query_controlActProcess_queryByParameter_queryId_extension>
+			<RqstMsg_query_controlActProcess_queryByParameter_statusCode_code>"new"</RqstMsg_query_controlActProcess_queryByParameter_statusCode_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_responseModalityCode_code>"R"</RqstMsg_query_controlActProcess_queryByParameter_responseModalityCode_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_responsePriorityCode_code>"I"</RqstMsg_query_controlActProcess_queryByParameter_responsePriorityCode_code>		
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_codeSystem>"1.3.5.1.4.1.19376.1.5.3.2"</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_codeSystem>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_codeSystemName>"IHEActCode"</RqstMsg_query_controlActProcess_queryByParameter_parameterList_careProvisionCode_value_codeSystemName>
+		</Variables>
+	</CareRecordQUPCIN043100UV01RequestType>
+	<PatientDemographicsPRPAIN201307UV02RequestType>
+		<Parameters>
+			<RqstMsg_query_controlActProcess_queryByParameter_parameterList_patientIdentifier_value_extension name="patientId" param="patientId">"0"</RqstMsg_query_controlActProcess_queryByParameter_parameterList_patientIdentifier_value_extension>
+		</Parameters>
+		<Variables>
+			<RqstMsg_localDeviceId>"1.1"</RqstMsg_localDeviceId>
+			<RqstMsg_senderOID>"1.1"</RqstMsg_senderOID>
+			<RqstMsg_receiverOID>"1.1"</RqstMsg_receiverOID>
+			<RqstMsg_query_id_extension>uid</RqstMsg_query_id_extension>
+			<RqstMsg_query_creationTime_value>"20121113121110.005"</RqstMsg_query_creationTime_value>
+			<RqstMsg_query_interactionId_root>"2.16.840.1.113883.5"</RqstMsg_query_interactionId_root>
+			<RqstMsg_query_interactionId_extension>"PRPA_IN201307UV02"</RqstMsg_query_interactionId_extension>
+			<RqstMsg_query_interactionId_assigningAuthorityName>"HL7"</RqstMsg_query_interactionId_assigningAuthorityName>
+			<RqstMsg_query_processingCode_code>"P"</RqstMsg_query_processingCode_code>
+			<RqstMsg_query_processingModeCode_code>"R"</RqstMsg_query_processingModeCode_code>
+			<RqstMsg_query_acceptAckCode_code>"AL"</RqstMsg_query_acceptAckCode_code>						
+			<RqstMsg_query_receiver_typeCode>CommunicationFunctionType.RCV</RqstMsg_query_receiver_typeCode>
+			<RqstMsg_query_receiver_device_id_extension>"Common Data Layer Service"</RqstMsg_query_receiver_device_id_extension>
+			<RqstMsg_query_receiver_device_classCode>EntityClassDevice.DEV</RqstMsg_query_receiver_device_classCode>
+			<RqstMsg_query_receiver_device_determinerCode>"INSTANCE"</RqstMsg_query_receiver_device_determinerCode>			
+			<RqstMsg_query_sender_typeCode>CommunicationFunctionType.SND</RqstMsg_query_sender_typeCode>
+			<RqstMsg_query_sender_device_id_extension>"Adapter Assembly Service"</RqstMsg_query_sender_device_id_extension>
+			<RqstMsg_query_sender_device_classCode>EntityClassDevice.DEV</RqstMsg_query_sender_device_classCode>
+			<RqstMsg_query_sender_device_determinerCode>"INSTANCE"</RqstMsg_query_sender_device_determinerCode>			
+			<RqstMsg_query_controlActProcess_classCode>ActClassControlAct.CACT</RqstMsg_query_controlActProcess_classCode>
+			<RqstMsg_query_controlActProcess_moodCode>XActMoodIntentEvent.EVN</RqstMsg_query_controlActProcess_moodCode>
+			<RqstMsg_query_controlActProcess_code_code>"PRPA_TE201307UV02"</RqstMsg_query_controlActProcess_code_code>
+			<RqstMsg_query_controlActProcess_priorityCode_code>"R"</RqstMsg_query_controlActProcess_priorityCode_code>			
+			<RqstMsg_query_controlActProcess_queryByParameter_queryId_extension>"TODO"</RqstMsg_query_controlActProcess_queryByParameter_queryId_extension>
+			<RqstMsg_query_controlActProcess_queryByParameter_statusCode_code>"new"</RqstMsg_query_controlActProcess_queryByParameter_statusCode_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_responseModalityCode_code>"R"</RqstMsg_query_controlActProcess_queryByParameter_responseModalityCode_code>
+			<RqstMsg_query_controlActProcess_queryByParameter_responsePriorityCode_code>"I"</RqstMsg_query_controlActProcess_queryByParameter_responsePriorityCode_code>		
+		</Variables>
+	</PatientDemographicsPRPAIN201307UV02RequestType>
+	<PatientDemographicsPRPAMT201303UVResponseType type="none">
+		<PRPAMT201303UV02Patient name="subject" type="private"> 
+			<II name = "id" type="private" parent="subject"></II>
+			<PRPAMT201303UV02Person name="patientPerson" type="private" parent="subject">
+				<PNExplicit name="name" type="private" parent = "patientPerson">
+					<EnExplicitFamily name="patientLastName" type="public"></EnExplicitFamily>
+					<EnExplicitGiven name="patientFirstName" type="public"></EnExplicitGiven>
+				</PNExplicit>
+				<CE name="administrativeGenderCode" type="private" parent = "patientPerson">
+					<ANY name="patientGender" type="public"></ANY>
+				</CE>
+				<TSExplicit name="birthTime" type="private" parent = "patientPerson"></TSExplicit>
+			</PRPAMT201303UV02Person>
+		</PRPAMT201303UV02Patient>			
+	</PatientDemographicsPRPAMT201303UVResponseType>
+	<CareRecordQUPCIN043200UV01MessageType type="none">
+		<QUPCIN043200UV01MCCIMT000300UV01Message name="response">
+			<QUPCIN043200UV01MFMIMT700712UV01ControlActProcess name="controlActProcess">
+				<QUPCIN043200UV01MFMIMT700712UV01Subject1 name="subject">
+					<QUPCIN043200UV01MFMIMT700712UV01RegistrationEvent name="registrationEvent">
+						<QUPCIN043200UV01MFMIMT700712UV01Subject5 name="subject2">
+							<REPCMT004000UV01CareProvisionEvent name="careProvisionEvent">
+								<REPCMT004000UV01PertinentInformation5 name="pertinentInformation3" retrunType="list">Problems
+									<REPCMT000100UV01Observation name="observation">
+										<II name="id"></II>
+										<CD name="code"></CD>
+										<CD name="statusCode"></CD>
+										<CD name="value"></CD>
+										<ProblemType name="problems" type="public">List</ProblemType>
+									</REPCMT000100UV01Observation>
+								</REPCMT004000UV01PertinentInformation5>
+								<REPCMT004000UV01PertinentInformation5 name="pertinentInformation3">Allergies
+									<REPCMT000100UV01Observation name="observation">
+										<II name="id"></II>
+										<CD name="code"></CD>
+										<CD name="statusCode"></CD>
+										<CD name="value"></CD>
+										<ProblemType name="allergies" type="public">List</ProblemType>
+									</REPCMT000100UV01Observation>
+								</REPCMT004000UV01PertinentInformation5>
+							</REPCMT004000UV01CareProvisionEvent>
+						</QUPCIN043200UV01MFMIMT700712UV01Subject5>
+					</QUPCIN043200UV01MFMIMT700712UV01RegistrationEvent>
+				</QUPCIN043200UV01MFMIMT700712UV01Subject1>				
+			</QUPCIN043200UV01MFMIMT700712UV01ControlActProcess>
+		</QUPCIN043200UV01MCCIMT000300UV01Message>	
+	</CareRecordQUPCIN043200UV01MessageType>
+</pluginConfigFile>
