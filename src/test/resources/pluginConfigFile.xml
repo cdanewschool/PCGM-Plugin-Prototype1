@@ -110,18 +110,18 @@
 									<REPCMT000100UV01Observation name="observation">
 										<II name="id"></II>
 										<CD name="code"></CD>
-										<CD name="statusCode"></CD>
-										<CD name="value"></CD>
+										<CS name="statusCode">CD</CS>
+										<ANY name="value">CD</ANY>
 										<ProblemType name="problems" type="public">List</ProblemType>
 									</REPCMT000100UV01Observation>
 								</REPCMT004000UV01PertinentInformation5>
-								<REPCMT004000UV01PertinentInformation5 name="pertinentInformation3">Allergies
+								<REPCMT004000UV01PertinentInformation5 name="pertinentInformation3" retrunType="list">Allergies
 									<REPCMT000100UV01Observation name="observation">
 										<II name="id"></II>
 										<CD name="code"></CD>
-										<CD name="statusCode"></CD>
-										<CD name="value"></CD>
-										<ProblemType name="allergies" type="public">List</ProblemType>
+										<CS name="statusCode">CD</CS>
+										<ANY name="value">CD</ANY>
+										<AllergyType name="allergies" type="public">List</AllergyType>
 									</REPCMT000100UV01Observation>
 								</REPCMT004000UV01PertinentInformation5>
 							</REPCMT004000UV01CareProvisionEvent>
