@@ -229,7 +229,7 @@ Map VariablesMap = new LinkedHashMap();
                     System.out.println("THIS IS THE NEXT TYPE STRING PASSED TO FUNCTION: " + nextType);
                 }
                 
-                //Checks the confic file to see if there is an item that contains this variable name
+                //Checks the config file to see if there is an item that contains this variable name
                 if ( !(isVariable(varName) || isParameter(varName))){
                     continue;
                 }       
@@ -684,8 +684,8 @@ Map VariablesMap = new LinkedHashMap();
  */
  // </editor-fold>
  private void getResponseMap(String valueType) throws SAXException, IOException {
-     //Document doc = null;
-        Object key;
+     // this build a flat map (key,value pair) of all the elements in the config file for the response message type(valueType paramenter)
+        Object key = null;
         Object value = null;
 
         try {
@@ -693,20 +693,24 @@ Map VariablesMap = new LinkedHashMap();
             factory.setNamespaceAware(true);
             DocumentBuilder builder;
             builder = factory.newDocumentBuilder();
+            //parses entire config file
             docResponse = builder.parse("src/test/resources/pluginConfigFile.xml");
+            //gets only the elements that are for this response message type (ie PatientDemographicsPRPAMT201303UVResponseType)
             NodeList nodeList2 = docResponse.getElementsByTagName(valueType);
           
             for(int i=0; i<nodeList2.getLength(); i++){
-               
+                    // the key is the concat variable name (ie RspnsMsg_subject_patientPerson_name)
                     key = nodeList2.item(i).getNodeName();
                     if (key.toString().contains("text")){
                         continue;
                     }
-                    if (nodeList2.item(i).getAttributes().getNamedItem("name") != null){
-                        value = nodeList2.item(i).getAttributes().getNamedItem("name").getNodeValue();
-                    }
+                    //the value is the hl7 type
                     if (nodeList2.item(i).getAttributes().getNamedItem("type") != null){
-                        String type = nodeList2.item(i).getAttributes().getNamedItem("type").getNodeValue();
+                        value = nodeList2.item(i).getAttributes().getNamedItem("type").getNodeValue();
+                    }
+                    //add the elements to the local maps according to their function mod
+                    if (nodeList2.item(i).getAttributes().getNamedItem("functionMod") != null){
+                        String type = nodeList2.item(i).getAttributes().getNamedItem("functionMod").getNodeValue();
                         if (type.matches("public")){
                              publicFunctionsMapWholeList.put(key, value);
                         }
@@ -715,8 +719,10 @@ Map VariablesMap = new LinkedHashMap();
                         }
                     }
                     else{
+                        //if it does not explicitly say what the functionMod is then its private
                          privateFunctionsMapWholeList.put(key, value);
                     }
+                    //dig into the next level of children 
                     if (nodeList2.item(i).getChildNodes().getLength()>0){   
                          for(int j=0; j<(nodeList2.item(i).getChildNodes().getLength()); j++){
                             if (nodeList2.item(i).getChildNodes().item(j).getNodeName().contains("text")){
@@ -733,6 +739,7 @@ Map VariablesMap = new LinkedHashMap();
         }
 }
  private boolean isPrivate(String keyValue, String valueValue){
+     //in the local private map list checking if key/value pair exists
        if(privateFunctionsMapWholeList.containsKey(keyValue) && privateFunctionsMapWholeList.containsValue(valueValue))
        {
            return true;
@@ -742,7 +749,7 @@ Map VariablesMap = new LinkedHashMap();
  }
  
  private boolean isPublic(String keyValue, String valueValue){
-       if(publicFunctionsMapWholeList.containsKey(keyValue))
+       if(publicFunctionsMapWholeList.containsKey(keyValue) || publicFunctionsMapWholeList.containsValue(valueValue))
        {
            return true;
        }
@@ -750,25 +757,41 @@ Map VariablesMap = new LinkedHashMap();
  
  }
  private String getParentNodeName(String value){
-     NodeList node = docResponse.getElementsByTagName(value);
-     if(node.item(0).getParentNode().getAttributes().getNamedItem("name") != null){
-          String pNode = node.item(0).getParentNode().getAttributes().getNamedItem("name").getNodeValue();
+     NodeList nodeList = docResponse.getElementsByTagName(value);
+     for(int i=0; i<nodeList.getLength(); i++){
+        if(nodeList.item(i).getParentNode().getAttributes().getNamedItem("name") != null){
+          String pNode = nodeList.item(i).getParentNode().getAttributes().getNamedItem("name").getNodeValue();
+          //if (privateFunctionsMapWholeList.containsValue(pNode) || publicFunctionsMapWholeList.containsValue(pNode)){
+                    return pNode;
+                }
+        //}
+     }
+     return "none";
+ }
+ private String getParentElementName(String value){
+     NodeList nodeList = docResponse.getElementsByTagName(value);
+      for(int i=0; i<nodeList.getLength(); i++){
+          String pNode = nodeList.item(i).getParentNode().getNodeName();
           if (privateFunctionsMapWholeList.containsValue(pNode) || publicFunctionsMapWholeList.containsValue(pNode)){
                     return pNode;
                 }
-     }
-     return null;
+      }
+     return "none";
  }
- private String getParentNodeType(String value){
-    NodeList node = docResponse.getElementsByTagName(value);
-    for(int i=0; i<node.getLength(); i++){
-         String pNode = node.item(i).getParentNode().getNodeName();
-         String iNode = node.item(i).getNodeName();
-         if(pNode.matches(prevType)){
-            // if (privateFunctionsMapWholeList.containsKey(pNode) || publicFunctionsMapWholeList.containsKey(pNode) || privateFunctionsMapWholeList.containsKey(iNode) || publicFunctionsMapWholeList.containsKey(iNode) ){
-                return pNode;
-            //}
+ private String getParentNodeType(String value){     
+    NodeList nodeList = docResponse.getElementsByTagName(value);
+    String parentNodeType;
+    for(int i=0; i<nodeList.getLength(); i++){
+         if(nodeList.item(0).getParentNode().getAttributes().getNamedItem("type") != null){
+            parentNodeType = nodeList.item(i).getParentNode().getAttributes().getNamedItem("type").getNodeValue();
+            return parentNodeType;
          }
+         //String iNode = node.item(i).getNodeName();
+        // if(pNode.matches(prevType)){
+            // if (privateFunctionsMapWholeList.containsKey(pNode) || publicFunctionsMapWholeList.containsKey(pNode) || privateFunctionsMapWholeList.containsKey(iNode) || publicFunctionsMapWholeList.containsKey(iNode) ){
+                
+            //}
+        // }
          
         
     }
@@ -780,9 +803,8 @@ Map VariablesMap = new LinkedHashMap();
           return pNode;
         }
     }  */ 
-     return null;
+     return "none";
  }
- //FIX: isParent uses the getParentNodeType which uses the docResponse. it has the whole tree not just for this request type.
  private boolean isParent(String value){
     String parent = getParentNodeType(value);
     if (parent == null){
@@ -809,8 +831,10 @@ Map VariablesMap = new LinkedHashMap();
                 if (node.item(i).getChildNodes().item(j).getNodeName().contains("text")){
                     continue;
                 }
-                key =   node.item(i).getChildNodes().item(j).getAttributes().getNamedItem("name").getNodeValue();
-                ovalue = node.item(i).getChildNodes().item(j).getNodeName();
+                key = node.item(i).getChildNodes().item(j).getAttributes().getNamedItem("name").getNodeValue();
+                ovalue = node.item(i).getChildNodes().item(j).getAttributes().getNamedItem("type").getNodeValue();
+                
+                //ovalue = node.item(i).getChildNodes().item(j).getNodeName();
                 publicFunctionsMapSubList.put(key, ovalue);
                 isChildFunctionPublic = true;
               }
@@ -818,9 +842,20 @@ Map VariablesMap = new LinkedHashMap();
      }
  }
  private String getReturnType(String value){
-     NodeList node = docResponse.getElementsByTagName(value);
-     if(node.item(0).getAttributes().getNamedItem("retrunType") != null){
-        return node.item(0).getAttributes().getNamedItem("retrunType").getNodeValue();
+     NodeList nodeList = docResponse.getElementsByTagName(value);
+     for(int i=0; i<nodeList.getLength(); i++){
+        if(nodeList.item(i).getAttributes().getNamedItem("returnType") != null){
+            return nodeList.item(i).getAttributes().getNamedItem("returnType").getNodeValue();
+        }
+     }
+     return "none";
+ }
+ private String getPublicName(String value){
+      NodeList nodeList = docResponse.getElementsByTagName(value);
+     for(int i=0; i<nodeList.getLength(); i++){
+        if(nodeList.item(i).getAttributes().getNamedItem("namePublic") != null){
+            return nodeList.item(i).getAttributes().getNamedItem("namePublic").getNodeValue();
+        }
      }
      return "none";
  }
@@ -840,7 +875,7 @@ public void generateResponseClass(Outline outline) throws SAXException, IOExcept
                     publicFunctionsMapWholeList.clear();
                     getResponseMap(implClass.name());
                     JFieldVar justAnyField = implClass.fields().values().iterator().next();
-                    generateResponseMethod(outline, implClass.name(), pcgmClass, pcgmCodeModel, "result", justAnyField);
+                    generateResponseMethod(outline, implClass.name(), pcgmClass, pcgmCodeModel, "RspnsMsg", "RspnsMsg", justAnyField);
                 
                   try {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -862,7 +897,7 @@ public void generateResponseClass(Outline outline) throws SAXException, IOExcept
 
  }
  
-public void generateResponseMethod(Outline outline, String nextType, JDefinedClass pcgmClass, JCodeModel pcgmCodeModel, String varName, JFieldVar theField) throws JClassAlreadyExistsException, SAXException, IOException{
+public void generateResponseMethod(Outline outline, String nextType, JDefinedClass pcgmClass, JCodeModel pcgmCodeModel, String concatVarName, String varName, JFieldVar theField) throws JClassAlreadyExistsException, SAXException, IOException{
         JMethod pcgmMethod = null;
         String jaxbStmnt = "";
         String classStmnt = "";
@@ -875,19 +910,23 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
            //looping through all the classes in the outline to find the one that matches the 'nextType' parameter for which a function may be generated
            if ((implClass.name().matches(nextType)) && !implClass.fullName().contains("generated")){
                //System.out.println("THIS IS THE NEXT TYPE STRING PASSED TO FUNCTION: " + nextType);
-                             
+              
+               if(implClass.name().matches("ANY")) {
+                   System.out.println("THIS IS THE NEXT TYPE STRING PASSED TO FUNCTION: " + nextType);
+               }
+               
                String varUp =  String.format( "%s%s", Character.toUpperCase(varName.charAt(0)), varName.substring(1) );
                varUp = "get"+varUp;
               
-               //if the method is in the configuration file as privateFunction
-               if (isPrivate(implClass.name(), theField.name()) && isParent(implClass.name())){
+               //if the method is in the configuration file as privateFunction //&& isParent(concatVarName)
+               if (isPrivate(concatVarName, implClass.name())){
                    
-                   String parentName = getParentNodeName(implClass.name());
+                   String parentName = getParentNodeName(concatVarName);
                    //create the private method and add the parameter
                    //TODO: make methods static, there is an option for JMod.STATIC question is how to do both private and static??
                    JClass jClassavpImpl;
                    //if the retrun type specified in the configfile is of type list then use the field name as the retrun type of the method being created
-                   if(getReturnType(implClass.name()).matches("list")){
+                   if(getReturnType(concatVarName).matches("list")){
                            pcgmMethod = pcgmClass.method(JMod.PRIVATE, theField.type(), "pcgm_"+varUp);
                            jClassavpImpl = (JClass) theField.type();
                    }
@@ -902,7 +941,7 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                    
                    JVar jvar = pcgmBlock.decl(jClassavpImpl, varName);
                    //for the private function we initialize the variable - if its not a list
-                    if(!getReturnType(implClass.name()).matches("list")){
+                    if(!getReturnType(concatVarName).matches("list")){
                            jvar.init(JExpr._new(jClassavpImpl));
                    }
                   
@@ -912,15 +951,15 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                   
                    //generate code that calls the parent function passing it param1
                    //TODO: generate code that checks for null values returned by parent function
-                   String parentNode = getParentNodeName(implClass.name());
-                   if (parentNode != null){
+                   String parentNode = getParentNodeName(concatVarName);
+                   if (parentNode != "none"){
                       String parentUp =  String.format( "%s%s", Character.toUpperCase(parentNode.charAt(0)), parentNode.substring(1) );
                       parentUp = "pcgm_get"+parentUp;
                       directStmnt = varName + " = " + parentUp+"(param1)."+varUp+"()";
                     }
                    //if the nextType is/was a list then we need to use the .get(index) method.
                    if (isList) {
-                       if(getReturnType(implClass.name()).matches("list")){
+                       if(getReturnType(concatVarName).matches("list")){
                            
                             directStmnt = directStmnt+";";
                        }
@@ -934,8 +973,9 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                    }
                    pcgmBlock.directStatement(directStmnt);
                    
-                   
-                   if(getReturnType(getParentNodeType(implClass.name())).matches("list")){
+                   int lastIndex = concatVarName.lastIndexOf("_");
+                   String subString = concatVarName.substring(0, lastIndex);
+                   if((getReturnType(subString)).matches("list")){
                            JForLoop forLoop = pcgmBlock._for(); 
                            JVar i = forLoop.init(pcgmCodeModel.INT, "i", JExpr.lit(0));
                            JExpression je = JExpr.direct(parentName+".size()");
@@ -950,11 +990,11 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                 }
                
                 //if the method is in the configuration file as publicFunction
-                if (isPublic(implClass.name(), theField.name()) ){
+                if (isPublic(concatVarName, implClass.name()) ){
                 //if (isPublic(implClass.name())){ //&& isParent(implClass.name())
-                    String parentName = getParentNodeName(implClass.name()); 
+                    String parentName = getParentNodeName(concatVarName); 
                    //create the public method and add the parameter
-                   pcgmMethod = pcgmClass.method(JMod.PUBLIC, String.class, varUp);
+                   pcgmMethod = pcgmClass.method(JMod.PUBLIC, String.class, getPublicName(concatVarName));
                    pcgmMethod.varParam(responseClass, "param1");
                    //create the return variable and add it to the method body
                    JBlock pcgmBlock = pcgmMethod.body();
@@ -968,7 +1008,7 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                       String parentUp =  String.format( "%s%s", Character.toUpperCase(parentName.charAt(0)), parentName.substring(1) );
                       parentUp = "pcgm_get"+parentUp;
                       directStmnt = parentName + " = " + parentUp+"(param1);";
-                      String parentType = getParentNodeType(implClass.name());
+                      String parentType = getParentNodeType(concatVarName);
                       if(parentType != null){
                         JClass jClassString2 = pcgmCodeModel.ref(parentType);
                         pcgmBlock.decl(jClassString2, parentName); 
@@ -1011,13 +1051,15 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                         if(!isListS){
                             
                             //getPublicFunctionsMap(implClass.name());
-                            getPublicChildFunctionsMap(implClass.name());
+                            getPublicChildFunctionsMap(concatVarName);
                             if(isChildFunctionPublic){
                                 for (Iterator it=publicFunctionsMapSubList.keySet().iterator(); it.hasNext(); ) {
+                                 //key = variableName, value = hl7 type
                                  Object key = it.next();
                                  Object value = publicFunctionsMapSubList.get(key);
-                                 prevType = implClass.name(); 
-                                 generateResponseMethod(outline, value.toString(), pcgmClass, pcgmCodeModel, key.toString(), theField);
+                                 String concatVName = concatVarName+ "_" + key.toString();
+                                // prevType = implClass.name(); 
+                                 generateResponseMethod(outline, value.toString(), pcgmClass, pcgmCodeModel, concatVName, key.toString(), theField);
                                 }
                                 isChildFunctionPublic = false;
                             }
@@ -1057,21 +1099,23 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
 
                     if (isListS) {
                       //getPublicFunctionsMap(implClass.name());
-                        getPublicChildFunctionsMap(implClass.name());
+                      getPublicChildFunctionsMap(concatVarName);
                       if(isChildFunctionPublic){
                          for (Iterator it=publicFunctionsMapSubList.keySet().iterator(); it.hasNext(); ) {
                             Object key = it.next();
                             Object value = publicFunctionsMapSubList.get(key);
+                            String concatVName = concatVarName+ "_" + key.toString();
                             prevType = implClass.name(); 
-                            generateResponseMethod(outline, value.toString(), pcgmClass, pcgmCodeModel, key.toString(), theField);
+                            generateResponseMethod(outline, value.toString(), pcgmClass, pcgmCodeModel, concatVName, key.toString(), theField);
                          }
                          isChildFunctionPublic = false;
                       }
                     }
                              
                    if (field.type().fullName().contains("org.hl7.v3")) {
-                     prevType = implClass.name();  
-                     generateResponseMethod(outline, ftn, pcgmClass, pcgmCodeModel, field.name(), field);
+                       String concatVName = concatVarName+ "_" + field.name();
+                       prevType = implClass.name();  
+                       generateResponseMethod(outline, ftn, pcgmClass, pcgmCodeModel, concatVName, field.name(), field);
                       
                     
                    }

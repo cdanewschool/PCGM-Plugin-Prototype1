@@ -84,51 +84,41 @@
 			<RqstMsg_query_controlActProcess_queryByParameter_responsePriorityCode_code>"I"</RqstMsg_query_controlActProcess_queryByParameter_responsePriorityCode_code>		
 		</Variables>
 	</PatientDemographicsPRPAIN201307UV02RequestType>
-	<PatientDemographicsPRPAMT201303UVResponseType type="none">
-		<PRPAMT201303UV02Patient name="subject" type="private"> 
-			<II name = "id" type="private" parent="subject"></II>
-			<PRPAMT201303UV02Person name="patientPerson" type="private" parent="subject">
-				<PNExplicit name="name" type="private" parent = "patientPerson">
-					<EnExplicitFamily name="patientLastName" type="public"></EnExplicitFamily>
-					<EnExplicitGiven name="patientFirstName" type="public"></EnExplicitGiven>
-				</PNExplicit>
-				<CE name="administrativeGenderCode" type="private" parent = "patientPerson">
-					<ANY name="patientGender" type="public"></ANY>
-				</CE>
-				<TSExplicit name="birthTime" type="private" parent = "patientPerson"></TSExplicit>
-			</PRPAMT201303UV02Person>
-		</PRPAMT201303UV02Patient>			
+	<PatientDemographicsPRPAMT201303UVResponseType type="PatientDemographicsPRPAMT201303UVResponseType" functionMod="none">
+		<RspnsMsg_subject type="PRPAMT201303UV02Patient" name="subject" functionMod="private"> 
+			<RspnsMsg_subject_id type="II" name = "id" functionMod="private" parent="subject"></RspnsMsg_subject_id>
+			<RspnsMsg_subject_patientPerson type="PRPAMT201303UV02Person" name="patientPerson" functionMod="private" parent="subject">
+				<RspnsMsg_subject_patientPerson_name type="PNExplicit" name="name" functionMod="private" parent = "patientPerson">
+					<RspnsMsg_subject_patientPerson_name_patientLastName type="EnExplicitFamily" name="patientLastName" functionMod="public" namePublic="getPatientLastName"></RspnsMsg_subject_patientPerson_name_patientLastName>
+					<RspnsMsg_subject_patientPerson_name_patientFirstName type="EnExplicitGiven" name="patientFirstName" functionMod="public"  namePublic="getPatientFirstName" ></RspnsMsg_subject_patientPerson_name_patientFirstName>
+				</RspnsMsg_subject_patientPerson_name>
+				<RspnsMsg_subject_patientPerson_administrativeGenderCode type="CE" name="administrativeGenderCode" functionMod="private" parent="patientPerson">
+					<RspnsMsg_subject_patientPerson_administrativeGenderCode_code type="CD" name="code" functionMod="public" namePublic="getPatientGender"></RspnsMsg_subject_patientPerson_administrativeGenderCode_code>
+				</RspnsMsg_subject_patientPerson_administrativeGenderCode>
+				<RspnsMsg_subject_patientPerson_birthTime type="TSExplicit" name="birthTime" functionMod="private" parent = "patientPerson"></RspnsMsg_subject_patientPerson_birthTime >
+			</RspnsMsg_subject_patientPerson>
+		</RspnsMsg_subject>			
 	</PatientDemographicsPRPAMT201303UVResponseType>
-	<CareRecordQUPCIN043200UV01MessageType type="none">
-		<QUPCIN043200UV01MCCIMT000300UV01Message name="response">
-			<QUPCIN043200UV01MFMIMT700712UV01ControlActProcess name="controlActProcess">
-				<QUPCIN043200UV01MFMIMT700712UV01Subject1 name="subject">
-					<QUPCIN043200UV01MFMIMT700712UV01RegistrationEvent name="registrationEvent">
-						<QUPCIN043200UV01MFMIMT700712UV01Subject5 name="subject2">
-							<REPCMT004000UV01CareProvisionEvent name="careProvisionEvent">
-								<REPCMT004000UV01PertinentInformation5 name="pertinentInformation3" retrunType="list">Problems
-									<REPCMT000100UV01Observation name="observation">
-										<II name="id"></II>
-										<CD name="code"></CD>
-										<CS name="statusCode">CD</CS>
-										<ANY name="value">CD</ANY>
-										<ProblemType name="problems" type="public">List</ProblemType>
-									</REPCMT000100UV01Observation>
-								</REPCMT004000UV01PertinentInformation5>
-								<REPCMT004000UV01PertinentInformation5 name="pertinentInformation3" retrunType="list">Allergies
-									<REPCMT000100UV01Observation name="observation">
-										<II name="id"></II>
-										<CD name="code"></CD>
-										<CS name="statusCode">CD</CS>
-										<ANY name="value">CD</ANY>
-										<AllergyType name="allergies" type="public">List</AllergyType>
-									</REPCMT000100UV01Observation>
-								</REPCMT004000UV01PertinentInformation5>
-							</REPCMT004000UV01CareProvisionEvent>
-						</QUPCIN043200UV01MFMIMT700712UV01Subject5>
-					</QUPCIN043200UV01MFMIMT700712UV01RegistrationEvent>
-				</QUPCIN043200UV01MFMIMT700712UV01Subject1>				
-			</QUPCIN043200UV01MFMIMT700712UV01ControlActProcess>
-		</QUPCIN043200UV01MCCIMT000300UV01Message>	
+	<CareRecordQUPCIN043200UV01MessageType type="CareRecordQUPCIN043200UV01MessageType" functionMod="none">
+		<RspnsMsg_response type="QUPCIN043200UV01MCCIMT000300UV01Message" name="response">
+			<RspnsMsg_response_controlActProcess type="QUPCIN043200UV01MFMIMT700712UV01ControlActProcess" name="controlActProcess">
+				<RspnsMsg_response_controlActProcess_subject type="QUPCIN043200UV01MFMIMT700712UV01Subject1" name="subject">
+					<RspnsMsg_response_controlActProcess_subject_registrationEvent type="QUPCIN043200UV01MFMIMT700712UV01RegistrationEvent" name="registrationEvent">
+						<RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2 type="QUPCIN043200UV01MFMIMT700712UV01Subject5" name="subject2">
+							<RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2_careProvisionEvent type="REPCMT004000UV01CareProvisionEvent" name="careProvisionEvent">
+								<RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2_careProvisionEvent_pertinentInformation3 type="REPCMT004000UV01PertinentInformation5" name="pertinentInformation3" returnType="list">Problems
+									<RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2_careProvisionEvent_pertinentInformation3_observation type="REPCMT000100UV01Observation" name="observation">
+										<RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2_careProvisionEvent_pertinentInformation3_observation_id type="II" name="id"></RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2_careProvisionEvent_pertinentInformation3_observation_id>
+										<RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2_careProvisionEvent_pertinentInformation3_observation_code type="CD" name="code"></RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2_careProvisionEvent_pertinentInformation3_observation_code>
+										<RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2_careProvisionEvent_pertinentInformation3_observation_statusCode type="CS" name="statusCode">CD</RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2_careProvisionEvent_pertinentInformation3_observation_statusCode>
+										<RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2_careProvisionEvent_pertinentInformation3_observation_value type="ANY" name="value" functionMod="public" namePublic="getProblem">CD</RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2_careProvisionEvent_pertinentInformation3_observation_value>						
+									</RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2_careProvisionEvent_pertinentInformation3_observation>
+								</RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2_careProvisionEvent_pertinentInformation3>								
+							</RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2_careProvisionEvent>
+						</RspnsMsg_response_controlActProcess_subject_registrationEvent_subject2>
+					</RspnsMsg_response_controlActProcess_subject_registrationEvent>
+				</RspnsMsg_response_controlActProcess_subject>				
+			</RspnsMsg_response_controlActProcess>
+		</RspnsMsg_response>	
 	</CareRecordQUPCIN043200UV01MessageType>
 </pluginConfigFile>
