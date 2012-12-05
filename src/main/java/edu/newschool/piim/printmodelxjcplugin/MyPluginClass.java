@@ -59,13 +59,14 @@ import org.w3c.dom.*;
 public class MyPluginClass extends Plugin {
 Boolean isList = false;
 Boolean isJAXB = false;
-JDefinedClass responseClass = null;
+JClass responseClass = null;
 String prevMethod = null;
 Boolean isFunctionPrivate = false;
 // Boolean isPrivate = false;
 Boolean isFunctionPublic = false;
 Boolean isListS= false;
 String prevType = null;
+JClass prevClass = null;
 Map publicFunctionsMapSubList = new LinkedHashMap();
 Map publicFunctionsMapWholeList = new LinkedHashMap();
 Map privateFunctionsMapWholeList = new LinkedHashMap();
@@ -877,7 +878,9 @@ public void generateResponseClass(Outline outline) throws SAXException, IOExcept
                     JFieldVar justAnyField = implClass.fields().values().iterator().next();
                     generateResponseMethod(outline, implClass.name(), pcgmClass, pcgmCodeModel, "RspnsMsg", "RspnsMsg", justAnyField);
                 
-                  try {
+                    
+                  
+                    try {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
                         pcgmCodeModel.build(new SingleStreamCodeWriter(out));
                         //System.out.println("GENERATED CODE:  " + out.toString());
@@ -900,9 +903,7 @@ public void generateResponseClass(Outline outline) throws SAXException, IOExcept
 public void generateResponseMethod(Outline outline, String nextType, JDefinedClass pcgmClass, JCodeModel pcgmCodeModel, String concatVarName, String varName, JFieldVar theField) throws JClassAlreadyExistsException, SAXException, IOException{
         JMethod pcgmMethod = null;
         String jaxbStmnt = "";
-        String classStmnt = "";
-        
-        
+        String classStmnt = "";   
         
         for (ClassOutline classOutline : outline.getClasses()) {
            JDefinedClass implClass = classOutline.implClass;
@@ -911,79 +912,112 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
            if ((implClass.name().matches(nextType)) && !implClass.fullName().contains("generated")){
                //System.out.println("THIS IS THE NEXT TYPE STRING PASSED TO FUNCTION: " + nextType);
               
-               if(implClass.name().matches("ANY")) {
+               if(implClass.name().matches("REPCMT000100UV01Observation")) {
                    System.out.println("THIS IS THE NEXT TYPE STRING PASSED TO FUNCTION: " + nextType);
                }
                
                String varUp =  String.format( "%s%s", Character.toUpperCase(varName.charAt(0)), varName.substring(1) );
                varUp = "get"+varUp;
               
+               String parentName = getParentNodeName(concatVarName);
+               String parentUp;
+               if (parentName != "none"){
+                      parentUp =  String.format( "%s%s", Character.toUpperCase(parentName.charAt(0)), parentName.substring(1) );
+                      parentUp = "pcgm_get"+parentUp;
+                     
+              }
+               else{
+                   parentUp = "";
+               } 
+              
                //if the method is in the configuration file as privateFunction //&& isParent(concatVarName)
-               if (isPrivate(concatVarName, implClass.name())){
+               if (isPrivate(concatVarName, implClass.name())){  
                    
-                   String parentName = getParentNodeName(concatVarName);
                    //create the private method and add the parameter
                    //TODO: make methods static, there is an option for JMod.STATIC question is how to do both private and static??
                    JClass jClassavpImpl;
+                   
+                   JBlock pcgmBlock; 
+                   
+                   JVar jvar;
                    //if the retrun type specified in the configfile is of type list then use the field name as the retrun type of the method being created
                    if(getReturnType(concatVarName).matches("list")){
-                           pcgmMethod = pcgmClass.method(JMod.PRIVATE, theField.type(), "pcgm_"+varUp);
-                           jClassavpImpl = (JClass) theField.type();
+                           pcgmMethod = pcgmClass.method(JMod.PRIVATE, pcgmCodeModel.ref(List.class).narrow(implClass), "pcgm_"+varUp);
+                           jClassavpImpl = pcgmCodeModel.ref(List.class).narrow(implClass);
+                           pcgmBlock = pcgmMethod.body();
+                           jvar = pcgmBlock.decl(jClassavpImpl, varName+"List");
+                           jvar.init(JExpr._null());
+                          
+                           //JFieldVar globField = pcgmClass.field(JMod.STATIC, pcgmCodeModel.ref(List.class).narrow(implClass), varUp, JExpr._null());                                                     
+                   }
+                   else if(getReturnType(concatVarName).matches("void") && isList){
+                           pcgmMethod = pcgmClass.method(JMod.PRIVATE, void.class, "pcgm_"+varUp);
+                           jClassavpImpl = pcgmCodeModel.ref(List.class).narrow(implClass);
+                           pcgmBlock = pcgmMethod.body();
+                           jvar = pcgmBlock.decl(jClassavpImpl, varName+"List");
+                           jvar.init(JExpr._null());
+                          
                    }
                    else{
                             pcgmMethod = pcgmClass.method(JMod.PRIVATE, implClass, "pcgm_"+varUp);
                             jClassavpImpl = implClass;
+                            pcgmBlock = pcgmMethod.body();
+                            jvar = pcgmBlock.decl(jClassavpImpl, varName);
+                            jvar.init(JExpr._new(jClassavpImpl));
                    }
-                   //TODO: the paramenter type needs to have the full name, ie: org.hl7.v3 -- not if we use the initiate that will import the needed classes
-                   pcgmMethod.varParam(responseClass, "param1");
-                   //create the return variable and add it to the method body
-                   JBlock pcgmBlock = pcgmMethod.body();
-                   
-                   JVar jvar = pcgmBlock.decl(jClassavpImpl, varName);
-                   //for the private function we initialize the variable - if its not a list
-                    if(!getReturnType(concatVarName).matches("list")){
-                           jvar.init(JExpr._new(jClassavpImpl));
-                   }
+                   pcgmMethod.param(responseClass, "param1");
                   
-
                    //parentPrv should should only be null for the first itteration
                    String directStmnt = varName + " = " + "param1" +"." +varUp+ "()";
                   
-                   //generate code that calls the parent function passing it param1
-                   //TODO: generate code that checks for null values returned by parent function
-                   String parentNode = getParentNodeName(concatVarName);
-                   if (parentNode != "none"){
-                      String parentUp =  String.format( "%s%s", Character.toUpperCase(parentNode.charAt(0)), parentNode.substring(1) );
-                      parentUp = "pcgm_get"+parentUp;
-                      directStmnt = varName + " = " + parentUp+"(param1)."+varUp+"()";
-                    }
                    //if the nextType is/was a list then we need to use the .get(index) method.
-                   if (isList) {
+                   if (isList ) {
                        if(getReturnType(concatVarName).matches("list")){
-                           
+                            directStmnt = varName+"List" + " = " + parentUp+"(param1)."+varUp+"()";
                             directStmnt = directStmnt+";";
                        }
                        else {
+                           directStmnt = varName + " = " + parentUp+"(param1)."+varUp+"()";
                            directStmnt = directStmnt+".get(0);";
                        }
                      
                    }
                    else {
+                       directStmnt = varName + " = " + parentUp+"(param1)."+varUp+"()";
                        directStmnt = directStmnt+";";
                    }
-                   pcgmBlock.directStatement(directStmnt);
+                   
                    
                    int lastIndex = concatVarName.lastIndexOf("_");
                    String subString = concatVarName.substring(0, lastIndex);
+                   
                    if((getReturnType(subString)).matches("list")){
+                           //pcgmMethod.type(pcgmCodeModel.ref(List.class).narrow(implClass)); 
+                          
+                           JVar jvar2 = pcgmBlock.decl(pcgmCodeModel.ref(List.class).narrow(prevClass), parentName+"List");
+                           JVar jvar3 = pcgmBlock.decl(prevClass, parentName);
+                           jvar2.init(JExpr.direct(parentUp+"(param1)"));
+                           jvar3.init(JExpr._null());
                            JForLoop forLoop = pcgmBlock._for(); 
                            JVar i = forLoop.init(pcgmCodeModel.INT, "i", JExpr.lit(0));
-                           JExpression je = JExpr.direct(parentName+".size()");
+                           JExpression je = JExpr.direct(parentName+"List.size()");
                            forLoop.test(JOp.lt(i, je));
                            forLoop.update(JExpr.assignPlus(i, JExpr.lit(1)));
-                           forLoop.body().directStatement("This is where the good stuff goes!");
+                           directStmnt = parentName + " = " + parentName +"List.get(i);";
+                           
+                           JBlock loopBlock = forLoop.body();
+                           loopBlock.directStatement(directStmnt);
+                           if(isJAXB){
+                               loopBlock.decl(implClass, varName, JExpr.direct(parentName+"."+varUp+"().getValue()"));
+                           }
+                           else{
+                               loopBlock.decl(implClass, varName, JExpr.direct(parentName+"."+varUp+"()"));
+                           }
+                           loopBlock.directStatement(varName+"List"+".add("+varName+");");
                    }
-                   
+                   else{
+                        pcgmBlock.directStatement(directStmnt);
+                   }
                    pcgmBlock._return(jvar);
                    
                    
@@ -992,10 +1026,10 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                 //if the method is in the configuration file as publicFunction
                 if (isPublic(concatVarName, implClass.name()) ){
                 //if (isPublic(implClass.name())){ //&& isParent(implClass.name())
-                    String parentName = getParentNodeName(concatVarName); 
+                    //String parentName = getParentNodeName(concatVarName); 
                    //create the public method and add the parameter
                    pcgmMethod = pcgmClass.method(JMod.PUBLIC, String.class, getPublicName(concatVarName));
-                   pcgmMethod.varParam(responseClass, "param1");
+                   pcgmMethod.param(responseClass, "param1");
                    //create the return variable and add it to the method body
                    JBlock pcgmBlock = pcgmMethod.body();
                    JClass jClassString = pcgmCodeModel.ref(String.class);
@@ -1005,8 +1039,8 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                   String directStmnt = "//ERROR-Public function missing parent in config file.";
                   
                    if (parentName != null){
-                      String parentUp =  String.format( "%s%s", Character.toUpperCase(parentName.charAt(0)), parentName.substring(1) );
-                      parentUp = "pcgm_get"+parentUp;
+                      //String parentUp =  String.format( "%s%s", Character.toUpperCase(parentName.charAt(0)), parentName.substring(1) );
+                      //parentUp = "pcgm_get"+parentUp;
                       directStmnt = parentName + " = " + parentUp+"(param1);";
                       String parentType = getParentNodeType(concatVarName);
                       if(parentType != null){
@@ -1106,6 +1140,7 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                             Object value = publicFunctionsMapSubList.get(key);
                             String concatVName = concatVarName+ "_" + key.toString();
                             prevType = implClass.name(); 
+                            prevClass = implClass;
                             generateResponseMethod(outline, value.toString(), pcgmClass, pcgmCodeModel, concatVName, key.toString(), theField);
                          }
                          isChildFunctionPublic = false;
@@ -1114,7 +1149,8 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                              
                    if (field.type().fullName().contains("org.hl7.v3")) {
                        String concatVName = concatVarName+ "_" + field.name();
-                       prevType = implClass.name();  
+                       prevType = implClass.name();
+                       prevClass = implClass;
                        generateResponseMethod(outline, ftn, pcgmClass, pcgmCodeModel, concatVName, field.name(), field);
                       
                     
