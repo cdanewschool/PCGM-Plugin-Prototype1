@@ -114,7 +114,7 @@ Map VariablesMap = new LinkedHashMap();
     {
         try {
             
-            //createRequestClass(outline);
+            generateRequestClass(outline);
             generateResponseClass(outline);
         } catch (IOException ex) {
             Logger.getLogger(MyPluginClass.class.getName()).log(Level.SEVERE, null, ex);
@@ -130,7 +130,7 @@ Map VariablesMap = new LinkedHashMap();
       timeStampMethod.body().assign(dateFormatField, JExpr.direct("new SimpleDateFormat(\"yyyyMMddHHmmssZ\")"));
       timeStampMethod.body()._return(JExpr.direct("dateFormat.format(new Date()).toString()"));
  }
- private void createRequestClass(Outline outline) throws SAXException, IOException {
+ private void generateRequestClass(Outline outline) throws SAXException, IOException {
       try {
             JCodeModel pcgmCodeModel = new JCodeModel();          
             //Create One Class that handles the generation of all Request Types
@@ -180,7 +180,7 @@ Map VariablesMap = new LinkedHashMap();
                             }  
                     }                
                     JBlock pcgmBlock = pcgmMethod.body();
-                    createRequestMethodBody(outline, request, pcgmBlock, "RqstMsg");
+                    generateRequestMethodBody(outline, request, pcgmBlock, "RqstMsg");
                     pcgmBlock._return(JExpr.ref("RqstMsg"));
                     pcgmMethod.name("createRequest" + request);
                 }       
@@ -206,7 +206,7 @@ Map VariablesMap = new LinkedHashMap();
  
  
          
- private void createRequestMethodBody(Outline outline, String nextType, JBlock pcgmBlock, String varName) throws JClassAlreadyExistsException, SAXException, IOException{
+ private void generateRequestMethodBody(Outline outline, String nextType, JBlock pcgmBlock, String varName) throws JClassAlreadyExistsException, SAXException, IOException{
      String nt = nextType;
     
      outterLoop:
@@ -266,7 +266,7 @@ Map VariablesMap = new LinkedHashMap();
                        }   
                    }     
                    if (fieldTypeFullName.contains("org.hl7.v3")) {
-                       createRequestMethodBody(outline, ftn, pcgmBlock, concatVariableName);                      
+                       generateRequestMethodBody(outline, ftn, pcgmBlock, concatVariableName);                      
                    }
                   
                    if (isVariable(concatVariableName) || isParameter(concatVariableName)){
@@ -860,6 +860,77 @@ Map VariablesMap = new LinkedHashMap();
      }
      return "none";
  }
+ 
+ private void createPublicClass(JCodeModel pcgmCodeModel, JDefinedClass pcgmClass, JMethod pcgmMethod, String concatVarName, String varName, JFieldVar field){
+   
+               String parentName = getParentNodeName(concatVarName);
+               String parentUp;
+               String varUp =  String.format( "%s%s", Character.toUpperCase(varName.charAt(0)), varName.substring(1) );
+                if (parentName != "none"){
+                      parentUp =  String.format( "%s%s", Character.toUpperCase(parentName.charAt(0)), parentName.substring(1) );
+                      parentUp = "pcgm_get"+parentUp;
+                     
+              }
+               else{
+                   parentUp = "";
+               } 
+               pcgmMethod = pcgmClass.method(JMod.PUBLIC, String.class, getPublicName(concatVarName));
+               pcgmMethod.param(responseClass, "param1");
+               
+               
+               //create the return variable and add it to the method body
+                   JBlock pcgmBlock = pcgmMethod.body();
+                   JClass jClassString = pcgmCodeModel.ref(String.class);
+                   JVar jvar = pcgmBlock.decl(jClassString, varName);
+
+                   //parentNode should never be null so this stmnt will allways get overridden, unless there is an error
+                  String directStmnt = "//ERROR-Public function missing parent in config file.";
+                  
+                   if (parentName != null){
+                      //String parentUp =  String.format( "%s%s", Character.toUpperCase(parentName.charAt(0)), parentName.substring(1) );
+                      //parentUp = "pcgm_get"+parentUp;
+                      directStmnt = parentName + " = " + parentUp+"(param1);";
+                      String parentType = getParentNodeType(concatVarName);
+                      if(parentType != null){
+                        JClass jClassString2 = pcgmCodeModel.ref(parentType);
+                        pcgmBlock.decl(jClassString2, parentName); 
+                      }
+                                   
+                    }        
+    
+                   pcgmBlock.directStatement(directStmnt);
+
+                   //TODO: NOW: try to use this for generating: EnExplicitFamily ob = (EnExplicitFamily) o.getValue();
+                   //if (isSubClass){
+                     
+                  // }
+
+                   if (isListS){
+                      //generate code to create a JAXBElement to handle the object we get from the serializable list
+                      String jaxbStmnt = "JAXBElement o = (JAXBElement)"+parentName+".getContent().get(i);";
+                      String classStmnt = "o.getValue().getClass().getName().equals(\"org.hl7.v3."+ field.type().name() + "\")";
+                      //the rest of the code in this block generates the if stmnts and for loops that set the value of the return variable
+                      JConditional jb = pcgmBlock._if(JExpr.direct(parentName + "!= null"));
+                      JForLoop forLoop = jb._then()._for();
+                      JVar i = forLoop.init(pcgmCodeModel.INT, "i", JExpr.lit(0));
+                      JExpression je = JExpr.direct(parentName+".getContent().size()");
+                      forLoop.test(JOp.lt(i, je));
+                      forLoop.update(JExpr.assignPlus(i, JExpr.lit(1)));
+                      forLoop.body().directStatement(jaxbStmnt);
+                      JConditional jb2 = forLoop.body()._if(JExpr.direct(classStmnt));
+                      jb2._then().directStatement(varName+" = o.getValue().getContent();");
+                      //isListS = false;
+                    }
+                   else{
+                       String ds = varName+"="+parentName+".get"+varUp+"();";
+                       pcgmBlock.directStatement(ds);
+                   }
+                    pcgmBlock._return(jvar);
+                    //isFunctionPublic = false;
+ 
+               
+               
+}
 public void generateResponseClass(Outline outline) throws SAXException, IOException{
       try {
          for (ClassOutline classOutline : outline.getClasses()) {
@@ -908,11 +979,14 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
         for (ClassOutline classOutline : outline.getClasses()) {
            JDefinedClass implClass = classOutline.implClass;
            
+           if(implClass.name().matches("ts")) {
+                   System.out.println("before the condition: " + nextType);
+               }
            //looping through all the classes in the outline to find the one that matches the 'nextType' parameter for which a function may be generated
            if ((implClass.name().matches(nextType)) && !implClass.fullName().contains("generated")){
                //System.out.println("THIS IS THE NEXT TYPE STRING PASSED TO FUNCTION: " + nextType);
               
-               if(implClass.name().matches("REPCMT000100UV01Observation")) {
+               if(implClass.name().matches("TSExplicit")) {
                    System.out.println("THIS IS THE NEXT TYPE STRING PASSED TO FUNCTION: " + nextType);
                }
                
@@ -1025,7 +1099,9 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                
                 //if the method is in the configuration file as publicFunction
                 if (isPublic(concatVarName, implClass.name()) ){
-                //if (isPublic(implClass.name())){ //&& isParent(implClass.name())
+                    createPublicClass(pcgmCodeModel, pcgmClass, pcgmMethod, concatVarName, varName, theField);
+               /*
+                    //if (isPublic(implClass.name())){ //&& isParent(implClass.name())
                     //String parentName = getParentNodeName(concatVarName); 
                    //create the public method and add the parameter
                    pcgmMethod = pcgmClass.method(JMod.PUBLIC, String.class, getPublicName(concatVarName));
@@ -1075,11 +1151,14 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                       //isListS = false;
                     }              
                     pcgmBlock._return(jvar);
-                    //isFunctionPublic = false;
+                    //isFunctionPublic = false; 
+                    */
  
                }
                
-               if (implClass.fields().isEmpty() && implClass._extends() != null){
+                
+                            
+                if (implClass.fields().isEmpty() && implClass._extends() != null){
                     if (implClass._extends().fullName().contains("org.hl7.v3")){
                         isSubClass = true;
                         if(!isListS){
@@ -1100,7 +1179,7 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                         }
                     }
                 }
-
+               
                 //Loop through all the fields in this class
                 for (JFieldVar field : implClass.fields().values()){
                     String ftn = field.type().name();
@@ -1130,10 +1209,10 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                     }
 
                     
-
+                    getPublicChildFunctionsMap(concatVarName);
                     if (isListS) {
                       //getPublicFunctionsMap(implClass.name());
-                      getPublicChildFunctionsMap(concatVarName);
+                      //getPublicChildFunctionsMap(concatVarName);
                       if(isChildFunctionPublic){
                          for (Iterator it=publicFunctionsMapSubList.keySet().iterator(); it.hasNext(); ) {
                             Object key = it.next();
@@ -1146,7 +1225,8 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                          isChildFunctionPublic = false;
                       }
                     }
-                             
+                    
+                    
                    if (field.type().fullName().contains("org.hl7.v3")) {
                        String concatVName = concatVarName+ "_" + field.name();
                        prevType = implClass.name();
@@ -1155,6 +1235,15 @@ public void generateResponseMethod(Outline outline, String nextType, JDefinedCla
                       
                     
                    }
+                   else if(isChildFunctionPublic){
+                        if(publicFunctionsMapSubList.containsKey(field.name()) && publicFunctionsMapSubList.containsValue(ftn)){
+                            String concatVName = concatVarName+ "_" + field.name();
+                            prevType = implClass.name();
+                            prevClass = implClass;
+                           createPublicClass(pcgmCodeModel, pcgmClass, pcgmMethod,  concatVName, field.name(), field);
+                        }
+                    }
+                  
             }
             
            
