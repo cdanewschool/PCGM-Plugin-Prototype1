@@ -16,22 +16,21 @@ public class PrintPluginTest extends RunXJC2Mojo {
     public File getSchemaDirectory() {
         return new File(getBaseDir(), "src/test/resources");
     }
-
-    @Override
+   
+   @Override
     protected void configureMojo(AbstractXJC2Mojo mojo) {
         super.configureMojo(mojo);
         mojo.setForceRegenerate(true);
         mojo.setWriteCode(true);
-        
+            
     }
 
     @Override
     public List<String> getArgs() {
         final List<String> args = new ArrayList<String>(super.getArgs());
         args.add("-MyPluginClass");
-       // args.add("-quite");
-       // args.add("-MarinePlugin-package:edu.example.marineplugin");
-        System.out.println(args.toString());
+        // args.add("-quite");
+        //System.out.println(args.toString());
         return args;
     }
 
